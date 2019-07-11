@@ -10,6 +10,7 @@
     "type": "git",
     "url": "git+https://github.com/EMSA-TECHNOLOGY/blueprod.git"
   },
+  "private": true,
   "keywords": [],
   "author": "Thanh LE <thanhlq@emsa-technology.com>",
   "license": "ISC",
