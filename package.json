@@ -1,0 +1,38 @@
+{
+  "name": "blueprod",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EMSA-TECHNOLOGY/blueprod.git"
+  },
+  "keywords": [],
+  "author": "Thanh LE <thanhlq@emsa-technology.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/EMSA-TECHNOLOGY/blueprod/issues"
+  },
+  "homepage": "https://github.com/EMSA-TECHNOLOGY/blueprod#readme",
+  "dependencies": {
+    "@blueprod/config": "^0.2.0",
+    "koa": "^2.7.0",
+    "koa-router": "^7.4.0",
+    "lodash": "^4.17.11"
+  },
+  "devDependencies": {
+    "browser-sync": "^2.26.7",
+    "cz-lerna-changelog": "^2.0.2",
+    "eslint": "^6.0.1",
+    "lerna": "^3.15.0",
+    "nodemon": "^1.19.1"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-lerna-changelog"
+    }
+  }
+}

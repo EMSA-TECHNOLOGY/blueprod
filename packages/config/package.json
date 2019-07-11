@@ -1,0 +1,34 @@
+{
+  "name": "@blueprod/config",
+  "version": "0.2.0",
+  "description": "This module allows you to manage your application configurations in all popular ways:",
+  "main": "lib/BlueProdConfig.js",
+  "types": "./index.d.ts",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EMSA-TECHNOLOGY/blueprod-config.git"
+  },
+  "keywords": [],
+  "author": "Thanh LE <thanhlq@emsa-technology.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/EMSA-TECHNOLOGY/blueprod-config/issues"
+  },
+  "homepage": "https://github.com/EMSA-TECHNOLOGY/blueprod-config#readme",
+  "dependencies": {
+    "chalk": "^2.4.2",
+    "dotenv": "^8.0.0",
+    "glob": "^7.1.4",
+    "js-yaml": "^3.13.1",
+    "lodash": "^4.17.11"
+  },
+  "devDependencies": {
+    "mocha": "^6.1.4"
+  }
+}
