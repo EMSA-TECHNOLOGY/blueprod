@@ -21,9 +21,9 @@
   "author": "Thanh LE <thanhlq@emsa-technology.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/EMSA-TECHNOLOGY/blueprod-config/issues"
+    "url": "https://github.com/EMSA-TECHNOLOGY/blueprod/issues"
   },
-  "homepage": "https://github.com/EMSA-TECHNOLOGY/blueprod-config#readme",
+  "homepage": "https://github.com/EMSA-TECHNOLOGY/blueprod#readme",
   "dependencies": {
     "chalk": "^2.4.2",
     "dotenv": "^8.0.0",
@@ -33,6 +33,5 @@
   },
   "devDependencies": {
     "mocha": "^6.1.4"
-  },
-  "gitHead": "50614342d6424ed7e7e2844e15e812b5fafc84ec"
+  }
 }
