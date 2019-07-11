@@ -1,6 +1,6 @@
 {
   "name": "@blueprod/config",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "This module allows you to manage your application configurations in all popular ways:",
   "main": "lib/BlueProdConfig.js",
   "types": "./index.d.ts",
@@ -12,7 +12,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/EMSA-TECHNOLOGY/blueprod-config.git"
+    "url": "git+https://github.com/EMSA-TECHNOLOGY/blueprod.git"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "keywords": [],
   "author": "Thanh LE <thanhlq@emsa-technology.com>",
@@ -30,5 +33,6 @@
   },
   "devDependencies": {
     "mocha": "^6.1.4"
-  }
+  },
+  "gitHead": "50614342d6424ed7e7e2844e15e812b5fafc84ec"
 }
