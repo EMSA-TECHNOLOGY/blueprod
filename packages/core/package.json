@@ -1,0 +1,22 @@
+{
+  "name": "@blueprod/core",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EMSA-TECHNOLOGY/blueprod.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "author": "Thanh LE <thanhlq@emsa-technology.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/EMSA-TECHNOLOGY/blueprod/issues"
+  },
+  "homepage": "https://github.com/EMSA-TECHNOLOGY/blueprod#readme"
+}
