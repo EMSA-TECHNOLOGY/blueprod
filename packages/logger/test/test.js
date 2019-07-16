@@ -14,7 +14,7 @@ logger.error(`error message with ex, `, new Error('dummy error message'));
 
 logger.info(obj1);
 
-for (let i = 0; i < 10000; i++) {
+for (let i = 0; i < 100; i++) {
   logger.info(`info message ` +i);
   logger.warn(`warn message ` +i);
   logger.debug(`debug message ` +i);

@@ -1,6 +1,6 @@
 {
   "name": "@blueprod/logger",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Logger",
   "main": "src/Logger.js",
   "directories": {
@@ -16,7 +16,12 @@
   "publishConfig": {
     "access": "public"
   },
-  "keywords": [],
+  "keywords": [
+    "node.js",
+    "winston",
+    "logger",
+    "stream"
+  ],
   "author": "Thanh LE<thanhlq@emsa-technology.com>",
   "license": "MIT",
   "bugs": {

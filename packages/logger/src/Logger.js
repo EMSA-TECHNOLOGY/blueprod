@@ -35,7 +35,7 @@ const mkdirp = require('mkdirp');
 const moment = require('moment');
 const debug = require('debug');
 const { format } = require('logform');
-const { combine, label, timestamp, printf } = format;
+// const { combine, label, timestamp, printf } = format;
 
 // ┌───────────────────────────────────────────────────────────────────────────┐
 // | IMPORT --                                                                 |
