@@ -7,15 +7,18 @@
     "test": "test"
   },
   "scripts": {
-    "test": "test"
+    "test": "node test/test.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/EMSA-TECHNOLOGY/js8.git"
+    "url": "git+https://github.com/EMSA-TECHNOLOGY/blueprod.git"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "keywords": [],
-  "author": "Tri Tran <tritm@emsa-technology.com>",
-  "license": "LicenseRef-LICENSE",
+  "author": "Thanh LE<thanhlq@emsa-technology.com>",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/EMSA-TECHNOLOGY/js8-core/issues"
   },
