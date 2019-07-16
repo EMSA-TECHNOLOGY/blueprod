@@ -27,7 +27,7 @@
   "bugs": {
     "url": "https://github.com/EMSA-TECHNOLOGY/blueprod/issues"
   },
-  "homepage": "https://github.com/EMSA-TECHNOLOGY/blueprod#readme",
+  "homepage": "https://github.com/EMSA-TECHNOLOGY/blueprod/tree/master/packages/logger",
   "dependencies": {
     "app-root-path": "^2.2.1",
     "lodash": "^4.17.14",
