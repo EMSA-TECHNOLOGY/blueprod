@@ -218,12 +218,36 @@ BlueProdConfig.prototype.printEnv = function (std = console.log) {
 };
 
 BlueProdConfig.prototype.get = function (key) {
-  return this.properties[key];
+  return getImpl(this.properties, key);
 };
 
 BlueProdConfig.prototype.set = function (key, value) {
   this.properties[key] = value;
   return this;
+};
+
+/**
+ * Underlying get mechanism (https://github.com/lorenwest/node-config/blob/master/lib/config.js)
+ *
+ * @private
+ * @method getImpl
+ * @param object {object} - Object to get the property for
+ * @param property {string|string[]} - The property name to get (as an array or '.' delimited string)
+ * @return value {*} - Property value, including undefined if not defined.
+ */
+const getImpl= function(object, property) {
+  var t = this,
+    elems = Array.isArray(property) ? property : property.split('.'),
+    name = elems[0],
+    value = object[name];
+  if (elems.length <= 1) {
+    return value;
+  }
+  // Note that typeof null === 'object'
+  if (value === null || typeof value !== 'object') {
+    return undefined;
+  }
+  return getImpl(value, elems.slice(1));
 };
 
 // process.cwd() returns the current working directory,
