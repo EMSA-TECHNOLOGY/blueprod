@@ -1,6 +1,6 @@
 {
   "name": "@blueprod/config",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "This module allows you to manage your application configurations in all popular ways:",
   "main": "lib/BlueProdConfig.js",
   "types": "./index.d.ts",
@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/EMSA-TECHNOLOGY/blueprod#readme",
   "dependencies": {
+    "app-root-path": "^2.2.1",
     "chalk": "^2.4.2",
     "dotenv": "^8.0.0",
     "glob": "^7.1.4",

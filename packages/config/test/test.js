@@ -9,7 +9,7 @@ describe('blueprod-config-basic', function() {
   describe('#Should load .env correctly', function() {
     it('load TEST environment', function() {
       process.env["NODE_ENV"] = 'test';
-      config.load({rootAppPath, debug: true});
+      config.reload({rootAppPath, debug: true});
     });
 
     it('Var envKey1 in .env should return \"test string 1\"', function() {
@@ -25,7 +25,7 @@ describe('blueprod-config-basic', function() {
   describe('#Should load test environment correctly', function() {
     it('load TEST environment', function() {
       process.env["NODE_ENV"] = 'test';
-      config.load({rootAppPath, debug: true});
+      config.reload({rootAppPath, debug: true});
     });
 
     /* default.js */
@@ -82,7 +82,7 @@ describe('blueprod-config-basic', function() {
   describe('#Should load development environment correctly', function() {
     it('load DEVELOPMENT environment', function() {
       process.env["NODE_ENV"] = 'development';
-      config.load({rootAppPath: rootAppPath, debug: true});
+      config.reload({rootAppPath: rootAppPath, debug: true});
     });
 
     /* default.js */
@@ -140,7 +140,7 @@ describe('blueprod-config-basic', function() {
   describe('#Should load production environment correctly', function() {
     it('load PRODUCTION environment', function() {
       process.env["NODE_ENV"] = 'production';
-      config.load({rootAppPath: rootAppPath, debug: true});
+      config.reload({rootAppPath: rootAppPath, debug: true});
     });
 
     /* default.js */

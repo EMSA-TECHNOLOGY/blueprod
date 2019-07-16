@@ -23,6 +23,15 @@ rootAppPath:
 
 ## How To Use
 
+### Root application path
+
+You have several options to provide the root application path or it will be detected
+
+- config.load({rootAppPath: '/home/xxx')
+- global.rootAppPath
+- or process.env["BLUEPROD_ROOT_APP_PATH"]
+- or we will use  the node module "app-root-path"
+
 ```javascript
 const config = require('blueprod-config').load();
 let configValue = config.get('app_key1')
@@ -48,3 +57,11 @@ a={a:'a'}; merge(a, {b:'bb'});        // a => { a: "a", b: "bb" }
 ([], ['a'], ['bb'])                   // => [ "bb" ]
 ([], ['a','b'], ['bb'])               // => [ "bb", "b" ]
 ```
+
+## License
+
+MIT license 
+
+## Author
+
+Developed & maintained by EMSA TECHNOLOGY COMPANY LTD (contact @ emsa-technology dot com).

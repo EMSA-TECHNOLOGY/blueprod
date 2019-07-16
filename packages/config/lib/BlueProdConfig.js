@@ -23,18 +23,16 @@ const chalk = require('chalk');
 const dotenv = require('dotenv');
 const glob = require('glob');
 
-const rootAppPathResolver = require('./RootAppPathResolver');
-
 const ENV_TEST_PATTERN = '**/!(development.js|development.yaml|development.yml|development.json|production.js|production.yaml|production.json)';
 const ENV_DEVELOPMENT_PATTERN = '**/!(test.js|test.yaml|test.json|production.js|production.yaml|production.yml|production.json)';
 const ENV_PRODUCTION_PATTERN = '**/!(development.js|development.yaml|development.json|test.js|test.yaml|test.yml|test.json)';
 
-const SUPPORTED_CONFIG_FILE_FORMATS = {
-  '.json':     true,
-  '.yaml':     true,
-  '.yml':     true,
-  '.js':       true,
-};
+// const SUPPORTED_CONFIG_FILE_FORMATS = {
+//   '.json':     true,
+//   '.yaml':     true,
+//   '.yml':     true,
+//   '.js':       true,
+// };
 
 /**
  *
@@ -59,6 +57,10 @@ module.exports = config;
  * @param opts.configDirName (combined with root application path)
  */
 BlueProdConfig.prototype.load = function (opts = {}) {
+  if (this.loaded) {
+    return this;
+  }
+
   const self = this;
   self.debug = opts.debug;
   let nodeEnv = process.env["NODE_ENV"];
@@ -68,7 +70,9 @@ BlueProdConfig.prototype.load = function (opts = {}) {
     console.error(chalk.bgRed('Node environment [NODE_ENV] is not specified!'));
   }
 
-  self.rootAppPath = opts.rootAppPath || rootAppPathResolver('').path;
+  // path.resolve(__dirname).split('/node_modules')[0]
+  self.rootAppPath = opts.rootAppPath || global.rootAppPath || process.env["BLUEPROD_ROOT_APP_PATH"] || require('app-root-path').path;
+  global.rootAppPath = self.rootAppPath;
   self.rootConfigPath = opts.rootConfigPath ||
     process.env.ROOT_CONFIG_PATH ||
     (path.join(self.rootAppPath, opts.configDirName || process.env.CONFIG_DIR_NAME || 'config'));
@@ -108,7 +112,19 @@ BlueProdConfig.prototype.load = function (opts = {}) {
   }
 
   self.properties = _.merge(self.properties || {}, self.env);
+  self.loaded = true;
   return self;
+};
+
+/**
+ * Used for testing or cases as your runtime application configuration changes.
+ *
+ * @param opts
+ * @returns {BlueProdConfig|*}
+ */
+BlueProdConfig.prototype.reload = function (opts = {}) {
+  this.loaded = false;
+  return this.load(opts);
 };
 
 BlueProdConfig.prototype.log = function(obj) {
