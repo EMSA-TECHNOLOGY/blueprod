@@ -25,9 +25,9 @@
   "author": "Thanh LE<thanhlq@emsa-technology.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/EMSA-TECHNOLOGY/js8-core/issues"
+    "url": "https://github.com/EMSA-TECHNOLOGY/blueprod/issues"
   },
-  "homepage": "https://github.com/EMSA-TECHNOLOGY/js8#readme",
+  "homepage": "https://github.com/EMSA-TECHNOLOGY/blueprod#readme",
   "dependencies": {
     "app-root-path": "^2.2.1",
     "lodash": "^4.17.14",
