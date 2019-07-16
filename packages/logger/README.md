@@ -1,5 +1,15 @@
 # blueprod Logger
 
+The simple wrapper for Winston logger, just need to import and provide simple configurations under javascript object.
+
+(Note: winston 3.x is used)
+
+Supported transports:
+- console
+- file
+- database (mongodb)
+- http (soon)
+
 ## How To Use
 
 **0. Example Configuration**
