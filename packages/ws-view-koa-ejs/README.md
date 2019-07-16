@@ -3,13 +3,15 @@ ws-view-koa-ejs
 
 Koa ejs view render middleware. support all feature of [ejs](https://github.com/mde/ejs).
 
+(Ref: https://github.com/koajs/ejs)
+
 ## Usage
 
 ### Example
 
 ```js
 const Koa = require('koa');
-const render = require('koa-ejs');
+const render = require('@blueprod/ws-view-koa-ejs');
 const path = require('path');
 
 const app = new Koa();
@@ -70,8 +72,10 @@ Supports ejs includes.
 
 Support [`ctx.state` in koa](https://github.com/koajs/koa/blob/master/docs/api/context.md#ctxstate).
 
-## Licences
-Copyright © 2018 EMSA TECHNOLOGY COMPANY LTD - All Rights Reserved.
+## License
 
-This software is the proprietary information of EMSA TECHNOLOGY COMPANY LTD. Unauthorized
-copying of this file, via any medium is strictly prohibited proprietary and confidential.
+MIT license 
+
+## Author
+
+Developed & maintained by EMSA TECHNOLOGY COMPANY LTD (contact @ emsa-technology dot com).

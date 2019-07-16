@@ -31,19 +31,19 @@ const defaultSettings = {
   locals: {},
   compileDebug: false,
   debug: false,
-  writeResp: true
+  writeResp: true,
+  async: false
 };
 
 /**
- * set app.context.render(view, data, opts).
+ * set app.context.render
  *
  * usage:
  * ```
- * await ctx.render('user', {name: 'dead_horse'}, {layout: 'template.ejs'});
+ * await ctx.render('user', {name: 'dead_horse'});
  * ```
- * @param app koa application instance
- * @param settings user settings
- * @param settings.root
+ * @param {Application} app koa application instance
+ * @param {Object} settings user settings
  */
 exports = module.exports = function (app, settings) {
   if (app.context.render) {
@@ -86,7 +86,7 @@ exports = module.exports = function (app, settings) {
     const tpl = await fs.readFile(viewPath, 'utf8');
 
     // override `ejs` node_module `resolveInclude` function
-    ejs.resolveInclude = function (name, filename, isDir) {
+    ejs.resolveInclude = function(name, filename, isDir) {
       if (!path.extname(name)) {
         name += settings.viewExt;
       }
@@ -98,7 +98,9 @@ exports = module.exports = function (app, settings) {
       _with: settings._with,
       compileDebug: settings.debug && settings.compileDebug,
       debug: settings.debug,
-      delimiter: settings.delimiter
+      delimiter: settings.delimiter,
+      cache: settings.cache,
+      async: settings.async
     });
     if (settings.cache) {
       cache[viewPath] = fn;

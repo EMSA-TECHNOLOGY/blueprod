@@ -13,6 +13,9 @@
     "type": "git",
     "url": "git+https://github.com/EMSA-TECHNOLOGY/blueprod.git"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "keywords": [
     "koa",
     "render",
@@ -24,7 +27,7 @@
   "bugs": {
     "url": "https://github.com/EMSA-TECHNOLOGY/blueprod/issues"
   },
-  "homepage": "https://github.com/koajs/ejs",
+  "homepage": "https://github.com/EMSA-TECHNOLOGY/blueprod/packages/ws-view-koa-ejs",
   "devDependencies": {
     "koa": "^2.7.0",
     "mocha": "^6.1.4",
