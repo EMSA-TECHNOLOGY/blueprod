@@ -1,0 +1,1 @@
+lerna publish from-package --no-git-tag-version
