@@ -30,12 +30,14 @@
 const _ = require('lodash');
 const path = require('path');
 const winston = require('winston');
+const Transport = require('winston-transport');
 const fs = require('fs');
 const mkdirp = require('mkdirp');
 const moment = require('moment');
 const debug = require('debug');
 const { format } = require('logform');
 // const { combine, label, timestamp, printf } = format;
+const LoggedHook = require('./LoggedHook');
 
 // ┌───────────────────────────────────────────────────────────────────────────┐
 // | IMPORT --                                                                 |
@@ -126,7 +128,6 @@ const Logger = function (namespace, opts) {
     namespace = namespace.name || namespace;
     this.namespace = namespace;
     this.internal_initLogger(this.namespace, opts);
-    // this.addLogMonitoring(this.logger);
     this.isDebug = debug.enabled(this.namespace);
     initializedLoggers[namespace] = this;
   }
@@ -227,6 +228,10 @@ Logger.prototype.internal_initLogger = function (componentName, options) {
   let winstonTransports = [];
   const logging = this.configure(options);
 
+  const transport = new LoggedHook();
+  winstonTransports.push(transport);
+  transport.on('logged', self.onLogged);
+
   if (logging.console.enabled) {
     const alignedWithColorsAndTime = format.combine(
       format.colorize(),
@@ -314,8 +319,7 @@ Logger.prototype.internal_initLogger = function (componentName, options) {
       transports: winstonTransports,
       exitOnError: false
     });
-    //self.addLogMonitoring(self.logger);
-    self.logger.info(`Logger for [${self.namespace}] instantiated with transports: [console: ${logging.console.enabled}, file: ${logging.file.enabled}, database: ${logging.database.enabled}]`);
+    self.logger.debug(`[${self.namespace}]  Instantiated with transports: [console: ${logging.console.enabled}, file: ${logging.file.enabled}, database: ${logging.database.enabled}]`);
   } else {
     console.error('[NOK] No logging transport configured!');
     self.logger = {
@@ -336,35 +340,22 @@ Logger.prototype.internal_initLogger = function (componentName, options) {
 };
 
 /**
- * Add hook monitoring when a log is executed in console, file or database.
- * @param logger
+ * Should be invoked when there logged entry, then to notify to listeners.
+ *
+ * @param info
  */
-Logger.prototype.addLogMonitoring = function (logger) {
-  const self = this;
+Logger.prototype.onLogged= function (info) {
+  console.log(info);
 
-  self.internal_getDistinctiveTransport();
+  if (Logger.hooks && !_.isEmpty(Logger.hooks)) {
+    const activeHooks = Logger.hooks.get(info.level);
 
-  logger.on('logging', function (transport, level, msg, meta) {
-    if (self.hooks && !_.isEmpty(self.hooks) && transport && transport.name === self.logConnector) {
-      const activeHooks = self.hooks.get(level);
-
-      if (activeHooks && _.isArray(activeHooks) && activeHooks.length > 0) {
-        for (let hook of activeHooks) {
-          const logObject = {
-            connector: transport.name,
-            level: level,
-            message: msg,
-            meta: meta
-          };
-          hook(logObject);
-        }
-      } else {
-        /* Ignore */
+    if (activeHooks && _.isArray(activeHooks) && activeHooks.length > 0) {
+      for (let hook of activeHooks) {
+        hook(info);
       }
-    } else {
-      /* Ignore */
     }
-  });
+  }
 };
 
 /**
@@ -440,11 +431,10 @@ Logger.prototype.internal_getOrCreateLogFilePath = function (parentDir, fileName
  * @param hook.cb    {Function} a callback will be executed when logger level is matched hook.level
  */
 Logger.prototype.addHook = function (hook) {
-  const self = this;
+  const self = Logger;
+
   if (!self.hooks) {
     self.hooks = new Map();
-  } else {
-    /* Ignore */
   }
 
   if (hook && _.isObject(hook) && hook.level && hook.cb) {
@@ -456,7 +446,7 @@ Logger.prototype.addHook = function (hook) {
       self.hooks.set(hook.level, [hook.cb]);
     }
   } else {
-    /* Ignore */
+    this.logger.error('Ingored invalid hook for logger!');
   }
 };
 
