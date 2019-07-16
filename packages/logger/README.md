@@ -12,48 +12,49 @@ Supported transports:
 
 ## How To Use
 
-**0. Example Configuration**
-
-```yaml
-logging:
-  file:
-    enabled: true
-    level: debug
-    logAppend: true
-    # 5MB
-    maxsize: 5242880
-    json: true
-    prettyPrint: true
-    depth: 10
-    tailable: true
-    zippedArchive: true
-    datePattern: yyyy-MM-dd
-  database:
-    enabled: false
-    # Connection information should be configured in database.logdb
-  console:
-    enabled: true
-    level: debug
-```
-
-**1. Instantiate/get the logger to your class:**
-
+### Example:
 
 ```javascript
-const logger = require('@blueprod/logger')({name : 'UserService'});
+const options = {
+  "console": {
+    "enabled": true,
+    "level": "debug"
+  },
+  "file": {
+    "enabled": true,
+    "level": "debug",
+    "logAppend": true,
+    /* 5MB */
+    "maxsize": 5*1000000,
+    "json": true,
+    "prettyPrint": true,
+    "depth": 10,
+    "tailable": true,
+    "zippedArchive": true,
+    "datePattern": "yyyy-MM-dd"
+  },
+  "database": {
+    /* @see: https://github.com/winstonjs/winston-mongodb */
+    "enabled": true,
+    /* url: mongodb://localhost:27017/blueprod_log */
+    /* Will remove color attributes from the log entry message, defaults to false. */
+    "decolorize": true,
+    "leaveConnectionOpen": false,
+  },
+};
+
+//const logger = require('@blueprod/logger')('MyLogger', options);
+const logger = require('../src/Logger')('MyLogger', options);
+
+logger.debug('your debug log message!');
+logger.info('your info log message!');
+logger.warn('your warn log message!');
+logger.error('your error log message!');
 ```
 
-**2 API:**
+### Add Hook
 
-```javascript
-logger.error("Error message");
-logger.warn("Warn message");
-logger.info("Info message");
-logger.debug("Debug message");
-logger.verbose("Verbose message");
-```
-
-**3. Add Hook:**
+TODO not working yet.
 
 This will help us to capture the logger activities when there is a 'warning', 'error' logs.
 
@@ -67,7 +68,7 @@ logger.addHook(hook);
 
 Returned *hookInfo* will contained propertyName *connector*(file, console, mongodb), *level*, *message*, *meta*.
 
-**4. Multiple Log instances:**
+### Multiple Log Instances
 
 You can use Logger with multiple instances, for each component just create a new instance of Logger with the input parameter is component name. For examples:
 
@@ -88,13 +89,32 @@ groupLogger.debug("Debug message");
 groupLogger.verbose("Verbose message");
 ```
 
-**5. Debug***
+### Debug
 
 Logger is built with support the __DEBUG__ environment variable from [debug](https://github.com/visionmedia/debug) which provides simple conditional logging.
 
 For examples:
 
+todo....
 
+## Roadmap
+
+
+## 0.1.x
+
+- Basic functionalities as transports (console/file/database)
+- Debug
+- Hook
+
+## 0.2.x
+
+- http support
+- stream support
+
+## 0.3.x
+
+- bucket/s3 support
+- Send mail (i.e. on error)
 
 ## License
 

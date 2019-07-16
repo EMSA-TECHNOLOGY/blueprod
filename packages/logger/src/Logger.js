@@ -80,6 +80,14 @@ const constants = {
     },
   }),
 };
+
+// const errorStackTracerFormat = format(info => {
+//   if (info.meta && info.meta instanceof Error) {
+//     info.message = `${info.message} ${info.meta.stack}`;
+//   }
+//   return info;
+// });
+
 /** Initialized logger by namespace/component */
 const initializedLoggers = {};
 /**
@@ -135,8 +143,8 @@ Logger.constants = constants;
 // | EXPORT ++                                                                 |
 // └───────────────────────────────────────────────────────────────────────────┘
 
-module.exports = function (namespace) {
-  return new Logger(namespace);
+module.exports = function (namespace, opts) {
+  return new Logger(namespace, opts);
 };
 
 // ┌───────────────────────────────────────────────────────────────────────────┐
@@ -222,17 +230,23 @@ Logger.prototype.internal_initLogger = function (componentName, options) {
   if (logging.console.enabled) {
     const alignedWithColorsAndTime = format.combine(
       format.colorize(),
+      // format.splat(),
+      /* doest not work yet */
+      // errorStackTracerFormat(),
+      format.errors({stack: true}),
       // label({ label: self.namespace }),
       format.timestamp(),
       format.align(),
+      // winston.format.simple(),
+      // format.json(),
       format.printf(info => `${info.timestamp}  ${info.level}: ${info.message}`)
     );
 
     let consoleTransport = new winston.transports.Console({
       level: logging.console.level || 'debug',
-      // handleExceptions: true,
-      // json: false,
-      // colorize: true
+      handleExceptions: true,
+      json: false,
+      colorize: true,
       format: alignedWithColorsAndTime
     });
     winstonTransports.push(consoleTransport);
@@ -293,9 +307,14 @@ Logger.prototype.internal_initLogger = function (componentName, options) {
 
   if (_.size(winstonTransports)) {
     self.logger = winston.createLogger({
+      // format: format.combine(
+      //   format.errors({ stack: true }),
+      //   format.json()
+      // ),
       transports: winstonTransports,
       exitOnError: false
     });
+    //self.addLogMonitoring(self.logger);
     self.logger.info(`Logger for [${self.namespace}] instantiated with transports: [console: ${logging.console.enabled}, file: ${logging.file.enabled}, database: ${logging.database.enabled}]`);
   } else {
     console.error('[NOK] No logging transport configured!');
