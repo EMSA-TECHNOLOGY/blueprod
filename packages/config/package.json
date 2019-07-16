@@ -1,6 +1,6 @@
 {
   "name": "@blueprod/config",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "This module allows you to manage your application configurations in all popular ways:",
   "main": "lib/BlueProdConfig.js",
   "types": "./index.d.ts",
