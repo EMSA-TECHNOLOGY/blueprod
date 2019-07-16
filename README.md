@@ -1,5 +1,6 @@
 # blueprod
 
-## Dependencies
+Various reusable node modules for your production.
 
-npm install commitizen -g
+Have look at [packages](https://github.com/EMSA-TECHNOLOGY/blueprod/tree/master/packages). 
+
