@@ -1,6 +1,6 @@
 {
   "name": "@blueprod/logger",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Logger",
   "main": "src/Logger.js",
   "directories": {
@@ -32,6 +32,7 @@
     "app-root-path": "^2.2.1",
     "lodash": "^4.17.14",
     "logform": "^2.1.2",
+    "mkdirp": "^0.5.1",
     "moment": "^2.24.0",
     "winston": "^3.2.1",
     "winston-mongodb": "^5.0.0"
