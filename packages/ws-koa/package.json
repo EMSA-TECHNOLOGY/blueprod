@@ -32,8 +32,8 @@
   "author": "Thanh LE <thanhlq@emsa-technology.com>",
   "license": "ISC",
   "dependencies": {
-    "@blueprod/common": "^0.1.0",
-    "@blueprod/config": "^0.2.3",
+    "@blueprod/common": "^0.2.0",
+    "@blueprod/config": "^0.2.4",
     "@blueprod/logger": "^0.1.5",
     "@blueprod/ws-view-koa-ejs": "^0.1.0",
     "koa": "^2.7.0",

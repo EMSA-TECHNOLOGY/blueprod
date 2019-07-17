@@ -23,7 +23,7 @@
   "bugs": {
     "url": "https://github.com/EMSA-TECHNOLOGY/blueprod/issues"
   },
-  "homepage": "https://github.com/EMSA-TECHNOLOGY/blueprod#readme",
+  "homepage": "https://github.com/EMSA-TECHNOLOGY/blueprod/tree/master/packages/config#readme",
   "dependencies": {
     "app-root-path": "^2.2.1",
     "chalk": "^2.4.2",

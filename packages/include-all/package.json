@@ -1,0 +1,41 @@
+{
+  "author": {
+    "name": "EMSA TECHNOLOGY"
+  },
+  "bugs": {
+    "url": "https://github.com/EMSA-TECHNOLOGY/blueprod/issues"
+  },
+  "dependencies": {
+    "lodash": "^4.17.14"
+  },
+  "deprecated": false,
+  "description": "An easy way to include all node.js modules within a directory.",
+  "devDependencies": {
+    "mocha": "^6.1.4"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "homepage": "https://github.com/EMSA-TECHNOLOGY/blueprod/tree/master/packages/include-all#readme",
+  "keywords": [
+    "include-all",
+    "include",
+    "require-all",
+    "require",
+    "directory"
+  ],
+  "license": "MIT",
+  "main": "index.js",
+  "name": "@blueprod/include-all",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/mikermcneil/include-all.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "test": "node ./node_modules/mocha/bin/mocha"
+  },
+  "version": "0.1.0"
+}

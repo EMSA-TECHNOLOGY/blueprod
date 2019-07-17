@@ -1,7 +1,7 @@
 'use strict';
 
 const _ = require('lodash');
-const log = require('@js8/logger')('RouteMiddlewarePolicy');
+const logger = require('@blueprod/logger')('RouteMiddlewarePolicy');
 
 /**
  * This middleware operates based on the controllers and route paths so it must be bound into a user route (since it uses

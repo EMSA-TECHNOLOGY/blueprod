@@ -35,6 +35,7 @@ const router = Router();
 const path = require('path');
 let C2K = require('./Koa2Connect');
 const logger = require('@blueprod/logger')('ws-koa');
+const PolicyManager = require('./PolicyManager');
 
 // ┌───────────────────────────────────────────────────────────────────────────┐
 // | IMPORT --                                                                 |
@@ -143,8 +144,12 @@ module.exports = KoaWebServiceApplication;
  * @param middlewares {[]} Array of middleware (type can be name or functions).
  */
 KoaWebServiceApplication.prototype.registerMiddlewares = function (middlewares) {
-  for (let i = 0; i < middlewares.length; i++) {
-    this.bindMiddleware(middlewares[i]);
+  if (middlewares && _.isArray(middlewares) && middlewares.length > 0) {
+    for (let i = 0; i < middlewares.length; i++) {
+      this.bindMiddleware(middlewares[i]);
+    }
+  } else {
+    logger.debug('No middlewares to register!');
   }
 };
 
