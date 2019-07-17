@@ -1,6 +1,6 @@
 {
   "name": "@blueprod/ws-koa",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Web Service implementation via Koa.js",
   "main": "src/index.js",
   "repository": {
