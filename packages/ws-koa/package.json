@@ -1,7 +1,7 @@
 {
   "name": "@blueprod/ws-platform-koa",
-  "version": "1.0.0",
-  "description": "Web Service implementation by Koa.js",
+  "version": "0.1.0",
+  "description": "Web Service implementation via Koa.js",
   "main": "src/index.js.js",
   "repository": {
     "type": "git",
@@ -13,7 +13,22 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
+  "keywords": [
+    "web",
+    "app",
+    "http",
+    "framework",
+    "middleware",
+    "webservice",
+    "websocket",
+    "socket.io",
+    "mongodb",
+    "mean",
+    "koa",
+    "node",
+    "blueprod",
+    "production"
+  ],
   "author": "Thanh LE <thanhlq@emsa-technology.com>",
   "license": "ISC",
   "dependencies": {

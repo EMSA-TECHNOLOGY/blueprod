@@ -24,6 +24,9 @@ const CONFIG_KEYS = Object.freeze({
   'HTTP_TRACE_REQUEST_DETAIL_ENABLED':  `${commonConstants.CONFIG_PREFIX}_HTTP_TRACE_REQUEST_DETAIL_ENABLED`,
   'HTTP_TRACE_RESPONSE_ENABLED':        `${commonConstants.CONFIG_PREFIX}_HTTP_TRACE_RESPONSE_ENABLED`,
   'HTTP_CORS_ENABLED':                  `${commonConstants.CONFIG_PREFIX}_HTTP_CORS_ENABLED`,
+  'HTTP_X_RESPONSE_TIME_ENABLED':       `${commonConstants.CONFIG_PREFIX}_HTTP_X_RESPONSE_TIME_ENABLED`,
+  /* i.e. X-RESPONSE-TIME */
+  'HTTP_X_RESPONSE_TIME_HEADER_NAME':   `${commonConstants.CONFIG_PREFIX}_HTTP_X_RESPONSE_TIME_HEADER_NAME`,
   'HTTP_STATIC_FILE_SERVING_ENABLED':   `${commonConstants.CONFIG_PREFIX}_HTTP_STATIC_FILE_SERVING_ENABLED`,
   'HTTP_COMPRESS_ENABLED':              `${commonConstants.CONFIG_PREFIX}_HTTP_COMPRESS_ENABLED`,
   /* i.e. ejs or ... */
@@ -56,7 +59,7 @@ const DEFAULT_MIDDLEWARES = [
   'ErrorResponseHandlerMiddleware',
   'xResponseTime',
   'StaticFileServing',
-  'SecurityHeadersMiddleware.js',
+  'SecurityHeadersMiddleware',
   'CorsMiddleware',
   'BodyParser',
   'RequestLogger',

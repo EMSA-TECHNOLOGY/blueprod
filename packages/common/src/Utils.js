@@ -134,12 +134,13 @@ function jsonPretty(obj, indents = 2) {
 }
 
 /**
- * Accept string i.e. 'true'
+ * Accept string i.e. 'true' or 'TRUE'
  *
- * @param boolVal
- * @return {boolean}
+ * @param boolVal     {*}
+ * @param defaultVal  {Boolean}
+ * @return {Boolean}
  */
-function parseBoolean(boolVal) {
+function parseBoolean(boolVal, defaultVal = false) {
   if (typeof boolVal === 'boolean') {
     return boolVal;
   }
@@ -149,7 +150,7 @@ function parseBoolean(boolVal) {
     return (val === 'true');
   }
 
-  return false;
+  return defaultVal;
 }
 
 function jsParseInt(pVal) {

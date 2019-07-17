@@ -86,7 +86,34 @@ const KoaWebServiceApplication = function (koaInstance, opts = {}) {
    * @type {[]}
    */
   this.middlewares = opts.middlewares || constants.DEFAULT_MIDDLEWARES;
+
+  /* @see https://github.com/koajs/koa/wiki/Error-Handling */
+  this.app.on('error', (err, ctx) => {
+    /* centralized error handling:
+     *   console.log error
+     *   write error to log file
+     *   save error and request information to database if ctx.request match condition
+     *   ...
+    */
+    HandleAppError(err, ctx);
+  });
 };
+
+function HandleAppError(err, ctx) {
+  /* example 1:
+  {
+    "errno": "EPIPE",
+    "code": "EPIPE",
+    "syscall": "write",
+    "headerSent": true
+  }
+   */
+  if (err && err.code === 'EPIPE') {
+    /* ignore (error writing to pipe - closed pipe) */
+  } else {
+    logger.error(`Unknown HTTP error: ` +ctx.path, err);
+  }
+}
 
 KoaWebServiceApplication.constants = constants;
 
@@ -151,7 +178,6 @@ KoaWebServiceApplication.prototype.bindMiddleware = function (fnMiddleware) {
 
   let middlewareName = fnMiddleware.name;
   if (fnResult && _.isFunction(fnResult) /* && fnResult.constructor.name === 'AsyncFunction' */) {
-    // let middlewareName = fnResult.name;
     if (fnResult.length === 2) {
       koaApp.use(fnResult);
       logger.debug(`Added KOA middleware: ${middlewareName}`);
@@ -162,8 +188,6 @@ KoaWebServiceApplication.prototype.bindMiddleware = function (fnMiddleware) {
       throw new Error(`Invalid middleware function! ${middlewareName}`);
     }
   } else {
-    /* Do nothing */
-    middlewareName =
     logger.debug(`Bound middleware: ${middlewareName}`);
   }
 };
@@ -178,7 +202,7 @@ KoaWebServiceApplication.prototype.disableCors = function () {
 
 KoaWebServiceApplication.prototype.start = async function (port) {
   this.port = port || this.port;
-  // this.registerMiddlewares(this.middlewares);
+  this.registerMiddlewares(this.middlewares);
   this.app.use(router.routes());
   this.app.listen(this.port);
 };

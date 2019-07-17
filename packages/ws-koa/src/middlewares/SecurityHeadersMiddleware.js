@@ -11,7 +11,7 @@ const helmet = require("koa-helmet");
  */
 module.exports = function WsStaticFileServing(wsApp, /* opts */) {
   if (wsApp.config.get('http.security.helmet', true) === false) {
-    /* Ingored */
+    /* Ignored */
   } else {
     return helmet();
   }
