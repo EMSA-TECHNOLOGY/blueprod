@@ -1,7 +1,9 @@
-const ws = require('../../packages/ws-koa/src');
+// const ws = require('"@blueprod/ws-koa": "^0.1.0"');
+// const app = new ws.KoaWebServiceApplication();
 
-// const app = new KoaWebServiceApplication({config: require('@blueprod/config').load({rootAppPath: __dirname})});
-const app = new ws.KoaWebServiceApplication();
+const ws = require('../../packages/ws-koa/src');
+const app = new ws.KoaWebServiceApplication({config: require('@blueprod/config').load({rootAppPath: __dirname})});
+
 let count = 1;
 
 app.get('/hello', async(ctx)=> {
