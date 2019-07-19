@@ -20,13 +20,17 @@ ProjectController.prototype.getProjects = async function (ctx, next) {
 
 /**
  * @swagger
+ * tags:
+ *   - name: Projects
+ */
+
+/**
+ * @swagger
  * /projects:
  *   post:
  *     summary: Update project
  *     description: Update project
  *     tags: [Projects]
- *     produces:
- *       - application/json
  *     responses:
  *       200:
  *         description: users

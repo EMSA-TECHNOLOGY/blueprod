@@ -13,8 +13,6 @@ module.exports.routes = {
    *     summary: Update user
    *     description: Update user
    *     tags: [User]
-   *     produces:
-   *       - application/json
    *     parameters:
    *       - $ref: '#/parameters/username'
    *     responses:

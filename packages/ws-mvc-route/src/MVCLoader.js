@@ -169,18 +169,17 @@ MVCLoader.prototype.load = async function (options) {
     // You can set every attribute except paths and swagger
     // https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md
     const swaggerDefinition = {
+      openapi: '3.0.0',
       info: {
         // API information (required)
         title: 'EMSA TECHNOLOGY :: blueprod APIs', // Title (required)
         version: require('../package').version, // Version (required)
         // description: 'A sample API', // Description (optional)
       },
-      // host: `localhost:${PORT}`, // Host (optional)
-      basePath: '/', // Base path (optional)swaggerSpec
-      consumes: [
-        'application/x-www-form-urlencoded',
-        'multipart/form-data'
-      ]
+      servers: [{
+        url: 'http://localhost:21400/',
+        description: 'localhost port 21400'
+      }]
     };
 
     const options = {

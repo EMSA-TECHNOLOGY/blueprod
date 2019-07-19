@@ -15,13 +15,42 @@ const users = [
 ];
 
 /**
- * @swagger1
- * /users
+ * @swagger
+ * tags:
+ *   - name: Users
+ */
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     user:
+ *       type: object
+ *       description: model for one user
+ *       required:
+ *         - password
+ *       properties:
+ *         firstName:
+ *           type: string
+ *         lastName:
+ *           type: string
+ *         company:
+ *           type: string
+ *         mobile:
+ *           type: string
+ *           pattern: '(\+84)+([0-9]{9,10})\b'
+ *         email:
+ *           type: string
+ *         password:
+ *           type: string
+ *           minLength: 2
+ *           maxLength: 10
+ * /users:
  *   get:
  *     summary: Returns users
  *     description: Returns users
  *     tags:
- *      - Users
+ *       - Users
  *     responses:
  *       200:
  *         description: users
@@ -37,14 +66,35 @@ UserController.prototype.getUsers = async function (ctx, next) {
  *     summary: Returns users
  *     description: Returns users
  *     tags:
- *      - Users
- *     produces:
- *      - application/json
+ *       - Users
  *     responses:
  *       200:
  *         description: users
  */
 UserController.prototype.createUser = async function (ctx, next) {
+  users.push(ctx.body);
+  ctx.body = users;
+};
+
+/**
+ * @swagger
+ * /signup:
+ *   post:
+ *     summary: create user
+ *     description: create user before use application
+ *     tags:
+ *       - Users
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/user'
+ *     responses:
+ *       200:
+ *         description: created user
+ */
+UserController.prototype.signUp = async function (ctx, next) {
   users.push(ctx.body);
   ctx.body = users;
 };
