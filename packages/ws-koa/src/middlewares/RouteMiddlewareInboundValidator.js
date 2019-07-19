@@ -1,7 +1,8 @@
 'use strict';
 
 const _ = require('lodash');
-const logger = require('@js8/logger')('mRouteMiddlewareInboundValidator');
+const moduleName = require('../../package').name.replace('@blueprod/', '');
+const logger = require('@blueprod/logger')(moduleName);
 
 /**
  *
@@ -12,8 +13,8 @@ const logger = require('@js8/logger')('mRouteMiddlewareInboundValidator');
  */
 module.exports = function mRouteMiddlewareInboundValidator(wsApp /* ws, opts = {}*/) {
   const _mvcRoutes = wsApp.boundMvcRoutes;
-  const wsConstants = wsApp.ws.constants;
-  const isDebug = wsApp.ws.isDebug;
+  const wsConstants = wsApp.constants;
+  const isDebug = wsApp.logger.isDebug;
 
   return async function mInboundValidator(ctx, next) {
     if (ctx._matchedRoute) {

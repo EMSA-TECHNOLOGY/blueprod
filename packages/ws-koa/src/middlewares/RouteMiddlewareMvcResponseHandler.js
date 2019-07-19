@@ -2,7 +2,8 @@
 
 
 const _ = require('lodash');
-const log = require('@js8/logger')('MVCRequestEnhancer');
+const moduleName = require('../../package').name.replace('@blueprod/', '');
+const logger = require('@blueprod/logger')(moduleName);
 
 // Thanh LE
 

@@ -82,10 +82,15 @@ const KoaWebServiceApplication = function (koaInstance, opts = {}) {
   this.port = opts.port || 21400;
   this.logger = logger;
   this.config = opts.config || require('@blueprod/config').load();
+  /* default router */
+  this.router = router;
   /* To contain working options */
   this.options = {
     rootAppPath:                        process.env["BLUEPROD_ROOT_APP_PATH"] || global.rootAppPath,
   };
+
+  /* Contain all bound verb-paths */
+  this.routeCount = 0;
 
   /**
    * Static map of all registered middleware.
@@ -93,17 +98,10 @@ const KoaWebServiceApplication = function (koaInstance, opts = {}) {
    * @type {[]}
    */
   this.middlewares = opts.middlewares || constants.DEFAULT_MIDDLEWARES;
+  this.internal_FindRouteMiddlewares();
 
   /* @see https://github.com/koajs/koa/wiki/Error-Handling */
-  this.app.on('error', (err, ctx) => {
-    /* centralized error handling:
-     *   console.log error
-     *   write error to log file
-     *   save error and request information to database if ctx.request match condition
-     *   ...
-    */
-    HandleAppError(err, ctx);
-  });
+  this.app.on('error', HandleAppError);
 };
 
 function HandleAppError(err, ctx) {
@@ -137,6 +135,10 @@ KoaWebServiceApplication.constants = constants;
 // └───────────────────────────────────────────────────────────────────────────┘
 
 module.exports = KoaWebServiceApplication;
+
+// module.exports = function (koaInstance, opts = {}) {
+//   return new KoaWebServiceApplication(koaInstance, opts);
+// };
 
 // ┌───────────────────────────────────────────────────────────────────────────┐
 // | EXPORT --                                                                 |
@@ -214,7 +216,10 @@ KoaWebServiceApplication.prototype.disableCors = function () {
 
 };
 
-KoaWebServiceApplication.prototype.bindRouteMiddleware = function() {
+/**
+ * This function is to find necessary (route) middlewares which all be bound before each user route (i.e. GET /users)
+ */
+KoaWebServiceApplication.prototype.internal_FindRouteMiddlewares = function() {
   const self = this;
   const envConfig = process.env;
   self.routeMiddlewares = self.routeMiddlewares || [];
@@ -257,6 +262,7 @@ KoaWebServiceApplication.prototype.bindRouteMiddleware = function() {
 };
 
 KoaWebServiceApplication.prototype.start = async function (opts = {}) {
+  const self = this;
   this.options = _.merge(this.options || {}, opts);
   this.options.port = this.options.port || process.env[common.Constants.CONFIG_KEYS.HTTP_PORT] || 21400;
 
@@ -264,47 +270,235 @@ KoaWebServiceApplication.prototype.start = async function (opts = {}) {
   this.registerMiddlewares(this.middlewares);
 
   /* Step 2: Bind mvc route if existed: this.mvcModel.mvcRoutes */
+  if (this.mvcModel && this.mvcModel.mvcRoutes) {
+    this.bindMvcRoutes(this.mvcModel.mvcRoutes);
+  }
+
+  this.app.use(router.routes());
 
   /* Step 3: Bind mvc open route if existed: this.mvcModel.mvcRoutes */
 
   /* Step 4: Bind some user's response to ctx */
   /* Load responses ++ */
   const ResponseLoader = require('./ResponseLoader');
-  const responses = await ResponseLoader.load(this.options);
-  if (!_.isEmpty(responses)) {
-    for (let p in responses) {
-      if (responses.hasOwnProperty(p)) {
-        self.app.context[p] = responses[p];
+  const ctxResponseMethod = await ResponseLoader.load(this.options);
+  if (!_.isEmpty(ctxResponseMethod)) {
+    for (let p in ctxResponseMethod) {
+      if (ctxResponseMethod.hasOwnProperty(p)) {
+        self.app.context[p] = ctxResponseMethod[p];
       }
     }
   }
 
-  this.app.use(router.routes());
   this.app.listen(this.port);
 };
 
-KoaWebServiceApplication.prototype.get = (apiPath, ...next) => {
-  logger.debug(`Bound [get] route: ${apiPath}`);
-  return router.get(apiPath, ...next);
+KoaWebServiceApplication.prototype.bindMvcRoutes = function (mvcRoutes) {
+  const self = this;
+  for (let apiUrl in mvcRoutes) {
+    if (!mvcRoutes.hasOwnProperty(apiUrl)) {
+      continue;
+    }
+    let routeInfo = mvcRoutes[apiUrl];
+    self.bindMvcRoute(routeInfo.path, mvcRoutes[apiUrl]);
+  }
+
+  self.ws.emit(constants.EVENTS.ROUTE_ALL_BOUND, self.boundMvcRoutes);
 };
 
-KoaWebServiceApplication.prototype.post = (apiPath, ...next) => {
-  logger.debug(`Bound [post] route: ${apiPath}`);
-  return router.post(apiPath, ...next);
+/**
+ * Bind a single route.
+ *
+ * @param apiUrl        {String} i.e. GET /users
+ * @param routeInfo   {Object}
+ * @param routeInfo.controllerId      {String} user (without word "controller")
+ * @param routeInfo.action            {String} getUser
+ * @param routeInfo.actionId          {String} user.get
+ * @param routeInfo.path              {String}  /users
+ * @param routeInfo.originalPath      {String}  GET /users
+ * @param routeInfo.originalTarget    {*}       i.e. user.getUser
+ * @param routeInfo.verb              {String}  i.e. get
+ * @param routeInfo.controller        {Object} The controller object (that contain the action
+ * @param routeInfo.fn                {Object} The action i.e. async function getUser(ctx, next)
+ * @param routeInfo.view              {String} Going to bind view -> controller/action/... shall be ignored.
+ *
+ */
+KoaWebServiceApplication.prototype.bindMvcRoute = function (apiUrl, routeInfo) {
+  const self = this;
+
+  const actionId = routeInfo.actionId || (routeInfo.controllerId + '.' + routeInfo.action);
+  const verb = routeInfo.verb;
+  const bindFunctionName = routeInfo.verb;
+
+  /* Bind the internal route middlewares before user route middlewares */
+  /* Note: this should be always bound since it can process the API automatically i.e. view,... */
+  if (self.routeMiddlewares && self.routeMiddlewares.length > 0) {
+    self[verb](apiUrl, ...self.routeMiddlewares);
+  }
+
+  if (!routeInfo.fn && routeInfo.controller && routeInfo.action) {
+    routeInfo.fn = routeInfo.controller[routeInfo.action];
+  }
+
+  let fn = routeInfo.fn;
+  if (fn) {
+    /* Try to guess if it's a connect middleware */
+    if ((routeInfo.controller && routeInfo.controller.isConnectMiddleware) || (routeInfo.fn && routeInfo.fn.length === 3)) {
+
+      if (Array.isArray(routeInfo.fn)) {
+        fn = [];
+        routeInfo.fn.forEach((fnTempt) => {
+          fn.push(C2K(fnTempt));
+        });
+      } else {
+        fn = C2K(routeInfo.fn);
+      }
+      logger.debug(`Binding Connect/Express route: [${verb} ${apiUrl}] --> [${actionId}]`);
+      // self[bindFunctionName](apiUrl, routeInfo.fn);
+    } else {
+      logger.debug(`Bound Koa route: [${verb} ${apiUrl}] --> [${actionId}]`);
+    }
+
+    // self._bindMvcAction(apiUrl, bindFunctionName, routeInfo);
+    /* Start to bind */
+    if (routeInfo.controller) {
+      router[bindFunctionName](apiUrl, async(ctx, next) => {
+        return await fn.call(routeInfo.controller, ctx, next);
+      });
+    } else {
+      router[bindFunctionName](apiUrl, fn);
+    }
+  }
+
+  self.internal_PutBoundRoute(apiUrl, routeInfo);
+  self.routeCount++;
 };
 
-KoaWebServiceApplication.prototype.put = (apiPath, ...next) => {
-  logger.debug(`Bound [put] route: ${apiPath}`);
-  return router.put(apiPath, ...next);
+KoaWebServiceApplication.prototype.internal_PutBoundRoute = function (apiUrl, routeInfo) {
+  /* Incoming request is always with verb in upper case */
+  let verb = routeInfo.httpVerb.toUpperCase();
+  /* There is NO space */
+  this.boundMvcRoutes[`${verb}${apiUrl}`] = routeInfo;
 };
 
-KoaWebServiceApplication.prototype.del = (apiPath, ...next) => {
-  logger.debug(`Bound [del] route: ${apiPath}`);
-  return router.del(apiPath, ...next);
+KoaWebServiceApplication.prototype.internal_bindRouteMiddleware = function (method, apiUrl, ...next) {
+  if (this.routeMiddlewares && this.routeMiddlewares.length > 0) {
+    router[method](apiUrl, ...this.routeMiddlewares);
+  }
+  router[method](apiUrl, ...next);
+  logger.debug(`Bound route: [${method}] ${apiUrl}`);
+  this.routeCount++;
+};
+
+KoaWebServiceApplication.prototype.get = (apiUrl, ...next) => {
+  this.internal_bindRouteMiddleware('get', apiPath, ...next);
+  // router.get(apiUrl, ...next);
+  return this;
+};
+
+KoaWebServiceApplication.prototype.post = (apiUrl, ...next) => {
+  this.internal_bindRouteMiddleware('post', apiUrl, ...next);
+  return this;
+};
+
+KoaWebServiceApplication.prototype.put = (apiUrl, ...next) => {
+  this.internal_bindRouteMiddleware('put', apiUrl, ...next);
+  return this;
+};
+
+KoaWebServiceApplication.prototype.del = (apiUrl, ...next) => {
+  this.internal_bindRouteMiddleware('del', apiUrl, ...next);
+  return this;
 };
 
 KoaWebServiceApplication.prototype.all = (apiPath, ...next) => {
   logger.debug(`Bound [all] route: ${apiPath}`);
+  return router.all(apiPath, ...next);
+};
+
+/**
+ * To support to bind connect/express middleware.
+ *
+ * @param apiPath
+ * @param next
+ * @returns {Router}
+ */
+KoaWebServiceApplication.prototype.cget = (apiPath, ...next) => {
+  /* convert connect callback to koa */
+  if (next) {
+    for (let i = 0; i < next.length; i++) {
+      next[i] = C2K(next[i]);
+    }
+  }
+
+  return router.get(apiPath, ...next);
+};
+
+/**
+ * To support to bind connect/express middleware.
+ * @param apiPath
+ * @param next
+ * @returns {*}
+ */
+KoaWebServiceApplication.prototype.cpost = (apiPath, ...next) => {
+  /* convert connect callback to koa */
+  if (next) {
+    for (let i = 0; i < next.length; i++) {
+      next[i] = C2K(next[i]);
+    }
+  }
+
+  return router.post(apiPath, ...next);
+};
+
+/**
+ * To support to bind connect/express middleware.
+ * @param apiPath
+ * @param next
+ * @returns {*}
+ */
+KoaWebServiceApplication.prototype.cput = (apiPath, ...next) => {
+  /* convert connect callback to koa */
+  if (next) {
+    for (let i = 0; i < next.length; i++) {
+      next[i] = C2K(next[i]);
+    }
+  }
+
+  return router.put(apiPath, ...next);
+};
+
+/**
+ * To support to bind connect/express middleware.
+ * @param apiPath
+ * @param next
+ * @returns {*}
+ */
+KoaWebServiceApplication.prototype.cdel = (apiPath, ...next) => {
+  /* convert connect callback to koa */
+  if (next) {
+    for (let i = 0; i < next.length; i++) {
+      next[i] = C2K(next[i]);
+    }
+  }
+
+  return router.del(apiPath, ...next);
+};
+
+/**
+ * To support to bind connect/express middleware.
+ * @param apiPath
+ * @param next
+ * @returns {*}
+ */
+KoaWebServiceApplication.prototype.call = (apiPath, ...next) => {
+  /* convert connect callback to koa */
+  if (next) {
+    for (let i = 0; i < next.length; i++) {
+      next[i] = C2K(next[i]);
+    }
+  }
+
   return router.all(apiPath, ...next);
 };
 
