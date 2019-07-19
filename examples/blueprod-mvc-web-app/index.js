@@ -33,7 +33,7 @@ app.get('/addRoute', async(ctx)=> {
 async function startApp() {
   const mvc = new MVC(app);
   await mvc.load();
-  await app.start(21400);
+  await app.start({port: 21400});
 }
 
 startApp();

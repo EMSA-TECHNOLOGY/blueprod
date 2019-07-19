@@ -6,9 +6,6 @@ const log = require('@js8/logger')('MVCRequestEnhancer');
 
 // Thanh LE
 
-// This middleware is to enhance the request to support some more parameters served for the MVC model.
-// Similar to Sails req.options
-
 /**
  * This middleware is to handle some user actions that does need a controller, for instance, view definition, required
  * authenticated or ...

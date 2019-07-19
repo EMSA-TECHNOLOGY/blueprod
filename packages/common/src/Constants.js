@@ -7,8 +7,8 @@ const HTTP_OPTIONS_DEFAULT = {
   port: process.env.HTTP_PORT || 21400,
   /* '0.0.0.0' -> all interfaces */
   /* bind on LOCAL interface */
-  // host: process.env.HTTP_HOST || '127.0.0.1',
-  host: process.env.HTTP_HOST || '0.0.0.0',
+  host: process.env.HTTP_HOST || '127.0.0.1',
+  // host: process.env.HTTP_HOST || '0.0.0.0',
 };
 
 const HTTPS_OPTIONS_DEFAULT = {
@@ -20,29 +20,41 @@ const HTTPS_OPTIONS_DEFAULT = {
 };
 
 const CONFIG_KEYS = Object.freeze({
-  'HTTP_TRACE_REQUEST_ENABLED':         `${CONFIG_PREFIX}_HTTP_TRACE_REQUEST_ENABLED`,
-  'HTTP_TRACE_REQUEST_PRETTY':          `${CONFIG_PREFIX}_HTTP_TRACE_REQUEST_PRETTY`,
-  'HTTP_TRACE_REQUEST_DETAIL_ENABLED':  `${CONFIG_PREFIX}_HTTP_TRACE_REQUEST_DETAIL_ENABLED`,
-  'HTTP_TRACE_RESPONSE_ENABLED':        `${CONFIG_PREFIX}_HTTP_TRACE_RESPONSE_ENABLED`,
-  'HTTP_CORS_ENABLED':                  `${CONFIG_PREFIX}_HTTP_CORS_ENABLED`,
-  'HTTP_X_RESPONSE_TIME_ENABLED':       `${CONFIG_PREFIX}_HTTP_X_RESPONSE_TIME_ENABLED`,
+  'HTTP_HOST':                                    `${CONFIG_PREFIX}_HTTP_HOST`,
+  'HTTP_PORT':                                    `${CONFIG_PREFIX}_HTTP_PORT`,
+  'HTTPs_HOST':                                   `${CONFIG_PREFIX}_HTTPs_HOST`,
+  'HTTPS_PORT':                                   `${CONFIG_PREFIX}_HTTPS_PORT`,
+  'HTTP_TRACE_REQUEST_ENABLED':                   `${CONFIG_PREFIX}_HTTP_TRACE_REQUEST_ENABLED`,
+  'HTTP_TRACE_REQUEST_PRETTY':                    `${CONFIG_PREFIX}_HTTP_TRACE_REQUEST_PRETTY`,
+  'HTTP_TRACE_REQUEST_DETAIL_ENABLED':            `${CONFIG_PREFIX}_HTTP_TRACE_REQUEST_DETAIL_ENABLED`,
+  'HTTP_TRACE_RESPONSE_ENABLED':                  `${CONFIG_PREFIX}_HTTP_TRACE_RESPONSE_ENABLED`,
+  'HTTP_CORS_ENABLED':                            `${CONFIG_PREFIX}_HTTP_CORS_ENABLED`,
+  'HTTP_X_RESPONSE_TIME_ENABLED':                 `${CONFIG_PREFIX}_HTTP_X_RESPONSE_TIME_ENABLED`,
   /* i.e. X-RESPONSE-TIME */
-  'HTTP_X_RESPONSE_TIME_HEADER_NAME':   `${CONFIG_PREFIX}_HTTP_X_RESPONSE_TIME_HEADER_NAME`,
-  'HTTP_STATIC_FILE_SERVING_ENABLED':   `${CONFIG_PREFIX}_HTTP_STATIC_FILE_SERVING_ENABLED`,
-  'HTTP_COMPRESS_ENABLED':              `${CONFIG_PREFIX}_HTTP_COMPRESS_ENABLED`,
+  'HTTP_X_RESPONSE_TIME_HEADER_NAME':             `${CONFIG_PREFIX}_HTTP_X_RESPONSE_TIME_HEADER_NAME`,
+  'HTTP_STATIC_FILE_SERVING_ENABLED':             `${CONFIG_PREFIX}_HTTP_STATIC_FILE_SERVING_ENABLED`,
+  /* i.e. rootAppPath/public */
+  'HTTP_ROOT_WEB_PATH':                           `${CONFIG_PREFIX}_HTTP_ROOT_WEB_PATH`,
+  'HTTP_COMPRESS_ENABLED':                        `${CONFIG_PREFIX}_HTTP_COMPRESS_ENABLED`,
+  'HTTP_MVC_RM_REQUEST_ENHANCER_ENABLED':         `${CONFIG_PREFIX}_HTTP_MVC_REQUEST_ENHANCER_ENABLED`,
+  'HTTP_MVC_RM_INBOUND_SCHEMA_VALIDATOR_ENABLED': `${CONFIG_PREFIX}_HTTP_INBOUND_SCHEMA_VALIDATOR_ENABLED`,
+  'HTTP_MVC_RM_RESPONSE_HANDLER_ENABLED':         `${CONFIG_PREFIX}_HTTP_MVC_RESPONSE_HANDLER_ENABLED`,
+  'HTTP_MVC_RM_POLICY_ENABLED':                   `${CONFIG_PREFIX}_HTTP_MVC_POLICY_ENABLED`,
   /* i.e. ejs or ... */
-  'VIEW_DEFAULT_TYPE':                  `${CONFIG_PREFIX}VIEW_DEFAULT_TYPE`,
+  'VIEW_DEFAULT_TYPE':                            `${CONFIG_PREFIX}VIEW_DEFAULT_TYPE`,
   /* i.e. debug ejs/... template engine */
-  'VIEW_DEBUG_ENABLED':                  `${CONFIG_PREFIX}_VIEW_DEBUG_ENABLED`,
-  'VIEW_CACHE_ENABLED':                  `${CONFIG_PREFIX}_VIEW_CACHE_ENABLED`,
+  'VIEW_DEBUG_ENABLED':                           `${CONFIG_PREFIX}_VIEW_DEBUG_ENABLED`,
+  'VIEW_CACHE_ENABLED':                           `${CONFIG_PREFIX}_VIEW_CACHE_ENABLED`,
   /* view */
-  'VIEW_DIR_NAME':                      `${CONFIG_PREFIX}_VIEW_DIR_NAME`,
+  'VIEW_DIR_NAME':                                `${CONFIG_PREFIX}_VIEW_DIR_NAME`,
   /* .ejs */
-  'EJS_EXTENSION_DEFAULT':              `${CONFIG_PREFIX}_EJS_EXTENSION_DEFAULT`,
+  'EJS_EXTENSION_DEFAULT':                        `${CONFIG_PREFIX}_EJS_EXTENSION_DEFAULT`,
 
-  MVC_MAKE_SERVICE_GLOBAL:              `${CONFIG_PREFIX}_MVC_MAKE_SERVICE_GLOBAL`,
-  MVC_MAKE_SERVICE_GLOBAL_DEFAULT:      false,
+  'MVC_MAKE_SERVICE_GLOBAL':                       `${CONFIG_PREFIX}_MVC_MAKE_SERVICE_GLOBAL`,
 });
+
+process.env[CONFIG_KEYS.HTTP_HOST] = process.env[CONFIG_KEYS.HTTP_HOST] || '127.0.0.1';
+process.env[CONFIG_KEYS.HTTP_PORT] = process.env[CONFIG_KEYS.HTTP_PORT] || '21400';
 
 const EVENTS = {
   /* Before loading of route files */
@@ -81,8 +93,9 @@ const MVC_DEFAULT_OPTIONS = Object.freeze({
   /*glob patter */
   // routeFiles: ['/config/routes.js'],
   /* Auto detected in config.routes first -> don't need to provide the file here */
-  routeFiles: ['*route*'],
-  controllerDirs: ['api/controllers'],
+  routeFiles: ['config/**/*route*'],
+  // controllerDirs: ['api/controllers'],
+  controllerDirs: ['api/controllers/**/*.js'],
   serviceDirs: ['api/services'],
   hookDirs: ['api/hooks'],
   policyDirs: ['api/policies'],
@@ -90,6 +103,11 @@ const MVC_DEFAULT_OPTIONS = Object.freeze({
   loadControllerRecursive: true,
   loadServiceRecursive: true,
   // middlewares: 'http.middlewares'
+});
+
+const MVC_CONSTANTS = Object.freeze({
+  MVC_MAKE_SERVICE_GLOBAL_DEFAULT:                false,
+  MVC_DEFAULT_OPTIONS:                            MVC_DEFAULT_OPTIONS,
 });
 
 const WEBSERVICE_APP_DEFAULT_OPTIONS = {
@@ -151,33 +169,32 @@ const HTTP_RESPONSE_METHODS = {
 };
 
 module.exports = {
-  PLATFORM_NAME:                        'BLUEPROD',
-  CONFIG_PREFIX:                        'BLUEPROD_',
-  CONFIG_KEYS:                          CONFIG_KEYS,
-  HTTP_OPTIONS_DEFAULT:                 Object.freeze(HTTP_OPTIONS_DEFAULT),
-  HTTPS_OPTIONS_DEFAULT:                Object.freeze(HTTPS_OPTIONS_DEFAULT),
-  STATUS_CODE:                          require('./StatusCodes'),
-  ACCEPT_TYPES:                         Object.freeze(ACCEPT_TYPES),
-  REQUEST_HEADER_KEYS:                  Object.freeze(REQUEST_HEADER_KEYS),
-  // MIDDLEWARE_ENABLED_NAME:              WS_MIDDLEWARE_ENABLED_NAME,
-  WEB_PUBLIC_PATH:                      '.tmp/public',
+  PLATFORM_NAME:                                  PLATFORM_NAME,
+  CONFIG_PREFIX:                                  CONFIG_PREFIX,
+  CONFIG_KEYS:                                    CONFIG_KEYS,
+  MVC_CONSTANTS:                                  MVC_CONSTANTS,
+  HTTP_OPTIONS_DEFAULT:                           Object.freeze(HTTP_OPTIONS_DEFAULT),
+  HTTPS_OPTIONS_DEFAULT:                          Object.freeze(HTTPS_OPTIONS_DEFAULT),
+  STATUS_CODE:                                    require('./StatusCodes'),
+  ACCEPT_TYPES:                                   Object.freeze(ACCEPT_TYPES),
+  REQUEST_HEADER_KEYS:                            Object.freeze(REQUEST_HEADER_KEYS),
+  WEB_PUBLIC_PATH_DEFAULT:                        '.tmp/public',
 
-  EVENTS:                               Object.freeze(EVENTS),
-  DEFAULT_MIDDLEWARES:                  Object.freeze(DEFAULT_MIDDLEWARES),
-  MVC_DEFAULT_OPTIONS:                  MVC_DEFAULT_OPTIONS,
-  WEBSERVICE_APP_DEFAULT_OPTIONS:       Object.freeze(WEBSERVICE_APP_DEFAULT_OPTIONS),
-  HOOKS:                                Object.freeze(WS_HOOKS),
+  EVENTS:                                         Object.freeze(EVENTS),
+  DEFAULT_MIDDLEWARES:                            Object.freeze(DEFAULT_MIDDLEWARES),
+  WEBSERVICE_APP_DEFAULT_OPTIONS:                 Object.freeze(WEBSERVICE_APP_DEFAULT_OPTIONS),
+  HOOKS:                                          Object.freeze(WS_HOOKS),
 
   VIEW: Object.freeze({
     /* To enable the view middleware */
-    VIEW_ENABLED_CK:                    'http.view.enabled',
+    VIEW_ENABLED_CK:                            'http.view.enabled',
     /* i.e. [{'.ejs': 'ejs'}] */
-    VIEW_ENGINES_ENABLED:               'http.view.enabled_engines',
+    VIEW_ENGINES_ENABLED:                       'http.view.enabled_engines',
     /* The directory contains the view files */
-    VIEW_DIRECTORY_CK:                  'http.view.dir',
+    VIEW_DIRECTORY_CK:                          'http.view.dir',
     /* The default extension when the extension is not provided */
-    EXTENSION_DEFAULT_CK:               'http.view.extension.default',
+    EXTENSION_DEFAULT_CK:                       'http.view.extension.default',
   }),
 
-  HTTP_RESPONSE_METHODS:                HTTP_RESPONSE_METHODS
+  HTTP_RESPONSE_METHODS:                        HTTP_RESPONSE_METHODS
 };

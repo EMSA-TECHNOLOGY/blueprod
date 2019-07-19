@@ -69,7 +69,7 @@ ClassTemplate.constants = constants;
 // | EXPORT ++                                                                 |
 // └───────────────────────────────────────────────────────────────────────────┘
 
-module.exports =ClassTemplate ;
+module.exports = ClassTemplate ;
 
 // ┌───────────────────────────────────────────────────────────────────────────┐
 // | EXPORT --                                                                 |

@@ -33,7 +33,8 @@ const Koa = require('koa');
 const Router = require('koa-router');
 const router = Router();
 const path = require('path');
-let C2K = require('./Koa2Connect');
+const C2K = require('./Koa2Connect');
+const common = require('@blueprod/common');
 const logger = require('@blueprod/logger')('ws-koa');
 const PolicyManager = require('./PolicyManager');
 
@@ -81,6 +82,11 @@ const KoaWebServiceApplication = function (koaInstance, opts = {}) {
   this.port = opts.port || 21400;
   this.logger = logger;
   this.config = opts.config || require('@blueprod/config').load();
+  /* To contain working options */
+  this.options = {
+    rootAppPath:                        process.env["BLUEPROD_ROOT_APP_PATH"] || global.rootAppPath,
+  };
+
   /**
    * Static map of all registered middleware.
    *
@@ -108,9 +114,12 @@ function HandleAppError(err, ctx) {
     "syscall": "write",
     "headerSent": true
   }
-   */
+  */
+
   if (err && err.code === 'EPIPE') {
     /* ignore (error writing to pipe - closed pipe) */
+  } else if (err.message && err.message === 'Parse Error') {
+    logger.debug('Error happened whe handling the request!', err, ctx);
   } else {
     logger.error(`Unknown HTTP error: ` +ctx.path, err);
   }
@@ -205,9 +214,71 @@ KoaWebServiceApplication.prototype.disableCors = function () {
 
 };
 
-KoaWebServiceApplication.prototype.start = async function (port) {
-  this.port = port || this.port;
+KoaWebServiceApplication.prototype.bindRouteMiddleware = function() {
+  const self = this;
+  const envConfig = process.env;
+  self.routeMiddlewares = self.routeMiddlewares || [];
+
+  const rmRequestEnhancerEnabled = common.Utils.parseBoolean(envConfig[common.Constants.CONFIG_KEYS.HTTP_MVC_RM_REQUEST_ENHANCER_ENABLED], true);
+  /* config: http.policy.enable */
+  const rmPolicyEnabled = common.Utils.parseBoolean(envConfig[common.Constants.CONFIG_KEYS.HTTP_MVC_RM_POLICY_ENABLED], true);
+  const rmResponseHandlerEnabled = common.Utils.parseBoolean(envConfig[common.Constants.CONFIG_KEYS.HTTP_MVC_RM_RESPONSE_HANDLER_ENABLED], true);
+  const rmInboundSchemaValidator = common.Utils.parseBoolean(envConfig[common.Constants.CONFIG_KEYS.HTTP_MVC_RM_INBOUND_SCHEMA_VALIDATOR_ENABLED], true);
+
+  if (rmRequestEnhancerEnabled) {
+    /* This middleware is required before going to user route controller action */
+    const rmMvcEnhancer = require('./middlewares/RouteMiddlewareMvcEnhancer')(self);
+    if (rmMvcEnhancer) {
+      self.routeMiddlewares.push(rmMvcEnhancer);
+    }
+  }
+
+  if (rmPolicyEnabled) {
+    /* This middleware is required before going to user route controller action */
+    const rmPolicy = require('./middlewares/RouteMiddlewarePolicy')(self);
+    if (rmPolicy) {
+      self.routeMiddlewares.push(rmPolicy);
+    }
+  }
+
+  if (rmResponseHandlerEnabled) {
+    const rmViewHandler = require('./middlewares/RouteMiddlewareMvcResponseHandler')(self);
+    if (rmViewHandler) {
+      self.routeMiddlewares.push(rmViewHandler);
+    }
+  }
+
+  if (rmInboundSchemaValidator) {
+    const mInboundSchema = require('./middlewares/RouteMiddlewareInboundValidator')(self);
+    if (mInboundSchema) {
+      self.routeMiddlewares.push(mInboundSchema);
+    }
+  }
+};
+
+KoaWebServiceApplication.prototype.start = async function (opts = {}) {
+  this.options = _.merge(this.options || {}, opts);
+  this.options.port = this.options.port || process.env[common.Constants.CONFIG_KEYS.HTTP_PORT] || 21400;
+
+  /* Step 1: Register middleware */
   this.registerMiddlewares(this.middlewares);
+
+  /* Step 2: Bind mvc route if existed: this.mvcModel.mvcRoutes */
+
+  /* Step 3: Bind mvc open route if existed: this.mvcModel.mvcRoutes */
+
+  /* Step 4: Bind some user's response to ctx */
+  /* Load responses ++ */
+  const ResponseLoader = require('./ResponseLoader');
+  const responses = await ResponseLoader.load(this.options);
+  if (!_.isEmpty(responses)) {
+    for (let p in responses) {
+      if (responses.hasOwnProperty(p)) {
+        self.app.context[p] = responses[p];
+      }
+    }
+  }
+
   this.app.use(router.routes());
   this.app.listen(this.port);
 };

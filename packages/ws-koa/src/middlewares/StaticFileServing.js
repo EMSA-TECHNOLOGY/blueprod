@@ -9,6 +9,8 @@ const utils = require('@blueprod/common').Utils;
  */
 module.exports = function WsStaticFileServing(wsApp, /* opts */) {
   const config = wsApp.config;
+  const rootAppPath = wsApp.options.rootAppPath || config.rootAppPath;
+  const rootWebPath = process.env[wsApp.constants.CONFIG_KEYS.HTTP_ROOT_WEB_PATH] || path.join(rootAppPath, wsApp.constants.WEB_PUBLIC_PATH_DEFAULT);
   const staticFile = utils.parseBoolean(process.env[wsApp.constants.CONFIG_KEYS.HTTP_STATIC_FILE_SERVING_ENABLED]);
 
   if (!staticFile) {
@@ -25,7 +27,6 @@ module.exports = function WsStaticFileServing(wsApp, /* opts */) {
       defer   : false,          /* If true, serves after return next(), allowing any downstream middleware to respond first. */
       gzip    : true,           /* Try to serve the gzipped version of a file automatically when gzip is supported by a client and if the requested file with .gz extension exists. defaults to true. */
     };
-    let rootWebPath = path.join(config.rootAppPath, '.tmp/public');
 
     koaApp.use(require('koa-favicon')(path.join(rootWebPath, 'favicon.ico')));
     koaApp.use(require('koa-static')(rootWebPath, opts));

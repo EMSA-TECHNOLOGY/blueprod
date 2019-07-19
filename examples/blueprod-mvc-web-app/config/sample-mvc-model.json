@@ -1,0 +1,86 @@
+{
+  "routes": {},
+  "controllers": {
+    "user": {
+      "identity": "user",
+      "globalId": "User"
+    }
+  },
+  "services": {
+    "UserService": {}
+  },
+  "views": {},
+  "rawRoutes": {
+    "GET   /v1/users": "user.getUsers",
+    "GET   /v1/users-json": "user.getUsers",
+    "GET   /login": {
+      "view": "user/login",
+      "viewType": "ejs",
+      "layout": "login-layout"
+    },
+    "POST  /login": {
+      "controller": "user.createUser"
+    }
+  },
+  "policies": {},
+  "mvcRoutes": {
+    "GET/v1/users": {
+      "originalTarget": "user.getUsers",
+      "action": "getUsers",
+      "controllerId": "user",
+      "actionId": "user.getusers",
+      "controller": {
+        "identity": "user",
+        "globalId": "User"
+      },
+      "verb": "get",
+      "path": "/v1/users",
+      "originalPath": "GET   /v1/users",
+      "httpVerb": "get"
+    },
+    "GET /v1/users-json": {
+      "originalTarget": "user.getUsers",
+      "action": "getUsers",
+      "controllerId": "user",
+      "actionId": "user.getusers",
+      "controller": {
+        "identity": "user",
+        "globalId": "User"
+      },
+      "verb": "get",
+      "path": "/v1/users-json",
+      "originalPath": "GET   /v1/users-json",
+      "httpVerb": "get"
+    },
+    "GET /login": {
+      "originalTarget": {
+        "view": "user/login",
+        "viewType": "ejs",
+        "layout": "login-layout"
+      },
+      "view": "user/login",
+      "viewType": "ejs",
+      "layout": "login-layout",
+      "verb": "get",
+      "path": "/login",
+      "originalPath": "GET   /login",
+      "httpVerb": "get"
+    },
+    "POST /login": {
+      "originalTarget": {
+        "controller": "user.createUser"
+      },
+      "controller": {
+        "identity": "user",
+        "globalId": "User"
+      },
+      "action": "createUser",
+      "controllerId": "user",
+      "actionId": "user.createuser",
+      "verb": "post",
+      "path": "/login",
+      "originalPath": "POST  /login",
+      "httpVerb": "post"
+    }
+  }
+}

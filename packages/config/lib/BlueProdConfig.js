@@ -71,11 +71,10 @@ BlueProdConfig.prototype.load = function (opts = {}) {
   }
 
   // path.resolve(__dirname).split('/node_modules')[0]
-  self.rootAppPath = opts.rootAppPath || global.rootAppPath || process.env["BLUEPROD_ROOT_APP_PATH"] || require('app-root-path').path;
-  global.rootAppPath = self.rootAppPath;
-  self.rootConfigPath = opts.rootConfigPath ||
-    process.env.ROOT_CONFIG_PATH ||
-    (path.join(self.rootAppPath, opts.configDirName || process.env.CONFIG_DIR_NAME || 'config'));
+  self.rootAppPath = opts.rootAppPath || global.rootAppPath || process.env['BLUEPROD_ROOT_APP_PATH'] || require('app-root-path').path;
+  self.rootConfigPath = opts.rootConfigPath || process.env['BLUEPROD_ROOT_CONFIG_PATH'] || (path.join(self.rootAppPath, opts.configDirName || process.env['BLUEPROD_CONFIG_DIR_NAME'] || 'config'));
+  process.env['BLUEPROD_ROOT_APP_PATH'] = global.rootAppPath =  self.rootAppPath;
+  process.env['BLUEPROD_ROOT_CONFIG_PATH'] = global.rootConfigPath =  self.rootConfigPath;
 
   console.log(chalk.bgGreen(`┌──────────────────────────────────────────────────────────────────────────────┐`));
   console.log(chalk.bgGreen(`| NODE_ENV:            ${nodeEnv}`.padEnd(79, ' ') +'|'));
