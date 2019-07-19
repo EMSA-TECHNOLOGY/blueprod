@@ -91,6 +91,7 @@ const KoaWebServiceApplication = function (koaInstance, opts = {}) {
 
   /* Contain all bound verb-paths */
   this.routeCount = 0;
+  this.boundMvcRoutes = {};
 
   /**
    * Static map of all registered middleware.
@@ -102,6 +103,7 @@ const KoaWebServiceApplication = function (koaInstance, opts = {}) {
 
   /* @see https://github.com/koajs/koa/wiki/Error-Handling */
   this.app.on('error', HandleAppError);
+  logger.debug('KoaWebServiceApplication instantiated.');
 };
 
 function HandleAppError(err, ctx) {
@@ -303,7 +305,7 @@ KoaWebServiceApplication.prototype.bindMvcRoutes = function (mvcRoutes) {
     self.bindMvcRoute(routeInfo.path, mvcRoutes[apiUrl]);
   }
 
-  self.ws.emit(constants.EVENTS.ROUTE_ALL_BOUND, self.boundMvcRoutes);
+  common.EventManager.emit(constants.EVENTS.ROUTE_ALL_BOUND, self.boundMvcRoutes);
 };
 
 /**
@@ -390,30 +392,30 @@ KoaWebServiceApplication.prototype.internal_bindRouteMiddleware = function (meth
   this.routeCount++;
 };
 
-KoaWebServiceApplication.prototype.get = (apiUrl, ...next) => {
-  this.internal_bindRouteMiddleware('get', apiPath, ...next);
+KoaWebServiceApplication.prototype.get = function (apiUrl, ...next) {
+  this.internal_bindRouteMiddleware('get', apiUrl, ...next);
   // router.get(apiUrl, ...next);
   return this;
 };
 
-KoaWebServiceApplication.prototype.post = (apiUrl, ...next) => {
+KoaWebServiceApplication.prototype.post = function (apiUrl, ...next) {
   this.internal_bindRouteMiddleware('post', apiUrl, ...next);
   return this;
 };
 
-KoaWebServiceApplication.prototype.put = (apiUrl, ...next) => {
+KoaWebServiceApplication.prototype.put = function (apiUrl, ...next) {
   this.internal_bindRouteMiddleware('put', apiUrl, ...next);
   return this;
 };
 
-KoaWebServiceApplication.prototype.del = (apiUrl, ...next) => {
+KoaWebServiceApplication.prototype.del = function (apiUrl, ...next) {
   this.internal_bindRouteMiddleware('del', apiUrl, ...next);
   return this;
 };
 
-KoaWebServiceApplication.prototype.all = (apiPath, ...next) => {
-  logger.debug(`Bound [all] route: ${apiPath}`);
-  return router.all(apiPath, ...next);
+KoaWebServiceApplication.prototype.all = function (apiUrl, ...next) {
+  this.internal_bindRouteMiddleware('all', apiUrl, ...next);
+  return this;
 };
 
 /**
@@ -423,7 +425,7 @@ KoaWebServiceApplication.prototype.all = (apiPath, ...next) => {
  * @param next
  * @returns {Router}
  */
-KoaWebServiceApplication.prototype.cget = (apiPath, ...next) => {
+KoaWebServiceApplication.prototype.cget = function (apiPath, ...next) {
   /* convert connect callback to koa */
   if (next) {
     for (let i = 0; i < next.length; i++) {
@@ -440,7 +442,7 @@ KoaWebServiceApplication.prototype.cget = (apiPath, ...next) => {
  * @param next
  * @returns {*}
  */
-KoaWebServiceApplication.prototype.cpost = (apiPath, ...next) => {
+KoaWebServiceApplication.prototype.cpost = function (apiPath, ...next) {
   /* convert connect callback to koa */
   if (next) {
     for (let i = 0; i < next.length; i++) {
@@ -457,7 +459,7 @@ KoaWebServiceApplication.prototype.cpost = (apiPath, ...next) => {
  * @param next
  * @returns {*}
  */
-KoaWebServiceApplication.prototype.cput = (apiPath, ...next) => {
+KoaWebServiceApplication.prototype.cput = function (apiPath, ...next) {
   /* convert connect callback to koa */
   if (next) {
     for (let i = 0; i < next.length; i++) {
@@ -474,7 +476,7 @@ KoaWebServiceApplication.prototype.cput = (apiPath, ...next) => {
  * @param next
  * @returns {*}
  */
-KoaWebServiceApplication.prototype.cdel = (apiPath, ...next) => {
+KoaWebServiceApplication.prototype.cdel = function (apiPath, ...next) {
   /* convert connect callback to koa */
   if (next) {
     for (let i = 0; i < next.length; i++) {
@@ -491,7 +493,7 @@ KoaWebServiceApplication.prototype.cdel = (apiPath, ...next) => {
  * @param next
  * @returns {*}
  */
-KoaWebServiceApplication.prototype.call = (apiPath, ...next) => {
+KoaWebServiceApplication.prototype.call = function (apiPath, ...next) {
   /* convert connect callback to koa */
   if (next) {
     for (let i = 0; i < next.length; i++) {

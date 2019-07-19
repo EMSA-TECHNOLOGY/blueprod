@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "@blueprod/config": "^0.2.4",
-    "@blueprod/ws-view-koa-ejs": "^0.1.0"
+    "@blueprod/ws-view-koa-ejs": "^0.1.0",
+    "@blueprod/ws-koa": "^0.1.2"
   }
 }
