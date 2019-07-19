@@ -32,12 +32,13 @@
 const _ = require('lodash');
 const path = require('path');
 const RouteLoader = require('./RouteLoader');
-const ControllerLoader = require('./ControllerLoader');
+const ControllerLoader = require('./GlobControllerLoader');
 const ServiceLoader = require('./ServiceLoader');
 const PolicyLoader = require('./PolicyLoader');
-const Verbs = require('./Verbs');
+const RawRouteToMvcRoute = require('./RawRouteToMvcRoute');
 const logger = require('@blueprod/logger')('ws-mvc-route');
 const common = require('@blueprod/common');
+const swaggerSpecGen = require('swagger-jsdoc');
 
 // ┌───────────────────────────────────────────────────────────────────────────┐
 // | IMPORT --                                                                 |
@@ -75,11 +76,6 @@ const constants = {
 const MVCLoader = function (wsApp) {
   this.wsApp = wsApp;
 
-  this.RouteLoader = RouteLoader;
-  this.ControllerLoader = ControllerLoader;
-  this.ServiceLoader = ServiceLoader;
-  this.PolicyLoader = PolicyLoader;
-
   /* For containing of loaded controllers, routes, services, views,... */
   this.mvcModel = {
     routes: {},
@@ -89,6 +85,13 @@ const MVCLoader = function (wsApp) {
   };
 };
 
+/*
+ * Statically export Classes below to outside.
+ */
+MVCLoader.RouteLoader = RouteLoader;
+MVCLoader.ControllerLoader = ControllerLoader;
+MVCLoader.ServiceLoader = ServiceLoader;
+MVCLoader.PolicyLoader = PolicyLoader;
 MVCLoader.constants = constants;
 
 // ┌───────────────────────────────────────────────────────────────────────────┐
@@ -112,10 +115,13 @@ module.exports = MVCLoader;
 // └───────────────────────────────────────────────────────────────────────────┘
 
 /**
+ * Start to find user's defined routes. All options are enabled by default.
  *
  * @param options
  * @param options.rootAppPath       {String} Required
  * @param options.loadRoute
+ * @param options.loadRouteFromSwaggerDoc {Boolean} Load routes from swagger doc definition (see swagger-jsdoc module for details)
+ * @param options.buildMvcRoutes          {Boolean} To build policy
  * @param options.loadController
  * @param options.loadService
  * @param options.loadPolicy
@@ -125,31 +131,75 @@ module.exports = MVCLoader;
  * @return {Promise.<string>}
  */
 MVCLoader.prototype.load = async function (options) {
-  // const self = this;
-  // const log = opts.logger || console;
-  const opts = _.merge(options || {}, common.Constants.MVC_DEFAULT_OPTIONS);
+  const opts = _.merge(options || {}, common.Constants.MVC_CONSTANTS.MVC_DEFAULT_OPTIONS);
 
   this.logger = opts.logger || console;
-  let loadRoute = _.isUndefined(opts.loadRoute) ? true : opts.loadRoute;
-  let loadController = _.isUndefined(opts.loadController) ? true : opts.loadController;
-  let loadService = _.isUndefined(opts.loadService) ? true : opts.loadService;
-  let loadPolicy = _.isUndefined(opts.loadPolicy) ? true : opts.loadPolicy;
+  const loadRoute = _.isUndefined(opts.loadRoute) ? true : opts.loadRoute;
+  const loadRouteFromSwaggerDoc = _.isUndefined(opts.loadRouteFromSwaggerDoc) ? true : opts.loadRouteFromSwaggerDoc;
+  const loadController = _.isUndefined(opts.loadController) ? true : opts.loadController;
+  const loadService = _.isUndefined(opts.loadService) ? true : opts.loadService;
+  const loadPolicy = _.isUndefined(opts.loadPolicy) ? true : opts.loadPolicy;
+  const buildMvcRoutes = _.isUndefined(opts.buildMvcRoutes) ? true : opts.buildMvcRoutes;
 
   if (!opts.rootAppPath) {
     opts.rootAppPath = global.rootAppPath || process.env["BLUEPROD_ROOT_APP_PATH"] || path.resolve(__dirname).split('/node_modules')[0];
   }
 
   if (loadRoute) {
-    await this.loadRoutes(opts);
+    const resultRoute = await this.loadRoutes(opts);
+    if (!_.isEmpty(resultRoute.routes)) {
+      this.mvcModel.rawRoutes = _.merge(this.mvcModel.rawRoutes || {}, resultRoute.routes);
+    }
+
+    this.mvcModel.routeFiles = resultRoute.routeFiles || [];
   }
 
   if (loadController) {
-    await this.loadControllers(opts);
+    const {controllers, controllerFiles} = await this.loadControllers(opts);
+    if (!_.isEmpty(controllers)) {
+      this.mvcModel.controllers = _.merge(this.mvcModel.controllers || {}, controllers);
+    }
+    if (!_.isEmpty(controllerFiles)) {
+      this.mvcModel.controllerFiles = _.merge(this.mvcModel.controllerFiles || [], controllerFiles);
+    }
+  }
+
+  /* Must have mvcModel.controllerFiles */
+  if (loadRouteFromSwaggerDoc && this.mvcModel.controllerFiles && this.mvcModel.controllerFiles.length > 0) {
+    // You can set every attribute except paths and swagger
+    // https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md
+    const swaggerDefinition = {
+      info: {
+        // API information (required)
+        title: 'EMSA TECHNOLOGY :: blueprod APIs', // Title (required)
+        version: require('../package').version, // Version (required)
+        // description: 'A sample API', // Description (optional)
+      },
+      // host: `localhost:${PORT}`, // Host (optional)
+      basePath: '/', // Base path (optional)swaggerSpec
+      consumes: [
+        'application/x-www-form-urlencoded',
+        'multipart/form-data'
+      ]
+    };
+
+    const options = {
+      /* options.definition could be also options.swaggerDefinition */
+      definition: swaggerDefinition,
+      /* Path to the API docs, Note that this path is relative to the current directory from which the Node.js is ran, not the application itself. */
+      apis: this.mvcModel.controllerFiles,
+    };
+    try {
+      this.mvcModel.openApiSpec = swaggerSpecGen(options);
+    } catch (ex) {
+      logger.error(`Error when generating OpenAPI spec from controller jsdoc`, ex);
+      throw ex;
+    }
   }
 
   if (loadService) {
     opts.makeServiceGlobal = opts.makeServiceGlobal || common.Utils.parseBoolean(process.env[common.Constants.CONFIG_KEYS.MVC_MAKE_SERVICE_GLOBAL]);
-    opts.makeServiceGlobal = opts.makeServiceGlobal !== undefined ? opts.makeServiceGlobal : common.Constants.CONFIG_KEYS.MVC_MAKE_SERVICE_GLOBAL_DEFAULT
+    opts.makeServiceGlobal = opts.makeServiceGlobal !== undefined ? opts.makeServiceGlobal : common.Constants.MVC_CONSTANTS.MVC_MAKE_SERVICE_GLOBAL_DEFAULT;
     await this.loadServices(opts);
   }
 
@@ -157,187 +207,31 @@ MVCLoader.prototype.load = async function (options) {
     await this.loadPolicies(opts);
   }
 
-  // this.mvcModel.mvcRoutes = this.buildMvcRoutes(this.mvcModel.routes, this.mvcModel.controllers);
+  if (buildMvcRoutes && !_.isEmpty(this.mvcModel.rawRoutes)) {
+    this.mvcModel.mvcRoutes = RawRouteToMvcRoute(this.mvcModel.rawRoutes, this.mvcModel.controllers);
+  } else {
+    logger.debug('Ignored MVC routes building!');
+  }
 
   if (this.wsApp) {
-    _.extend(this.wsApp, this.mvcModel);
+    if (!this.wsApp.mvcModel) {
+      this.wsApp.mvcModel = _.clone(this.mvcModel);
+    } else {
+      _.extend(this.wsApp.mvcModel, this.mvcModel);
+    }
   }
 
   return this.mvcModel;
 };
 
-/**
- * This function is to build the mapping between route and controller action.
- *
- * @return {Object} {path, actionInfo} -> {'GET /users', {actionInfo}}
- */
-MVCLoader.prototype.buildMvcRoutes = function (routes, controllers) {
-  const builtRoutes = {};
-
-  for (let path in routes) {
-    if (!routes.hasOwnProperty(path)) {
-      continue;
-    }
-
-    let targets = routes[path];
-    let args = sanitize(path, targets);
-    let httpVerb = args.verb || 'ALL';
-    let verb = Verbs.userVerb2KoaVerb(args.verb || 'ALL');
-
-    const builtTarget = this.parseRouteTarget(path, targets, controllers);
-
-    if (builtTarget) {
-      builtTarget.verb = verb;
-      builtTarget.path = args.path;
-      builtTarget.verb = verb;
-      builtTarget.originalPath = path;
-      builtTarget.httpVerb = httpVerb;
-      builtRoutes[`${verb.toUpperCase()} ${args.path}`] = builtTarget;
-    }
-  }
-
-  return builtRoutes;
-};
-
-/**
- * For example: 'UserController.createUser'
- */
-MVCLoader.prototype.parseAction = function (action) {
-  if (action && _.isString(action) && action.indexOf('.') > 0) {
-    action = action.trim();
-    let parts = action.split('.');
-    let result = {
-      action: parts[1],
-      controllerId : parts[0].toLowerCase().replace('controller', ''),
-    };
-    result.actionId = result.controllerId +'.' +result.action.toLowerCase();
-
-    return result;
-  }
-
-  return {};
-};
-
-/**
- * Parse a user route definition (path, target).
- *
- * @param routePath     {String}  The user route path i.e. "GET /users"
- * @param target        {*}       Can be various as "Controller.action", "users/action", object type as {view: "user.ejs", layout: "user-profile.ejs"}.
- * @param controllers   {Object}  The needed controller object (<controllerId, controllerObject>), Needed in the case the target is controller/action.
- *
- * @return {*}    The parsed MVC route object that contains all needed information for binding.
- */
-MVCLoader.prototype.parseRouteTarget = function (routePath, target, controllers) {
-  const self = this;
-
-  const targetInfo = {
-    /* may be:
-      - controllerId, action (fn name), actionId
-      - view, layout
-      - fn (handler function)
-     */
-    originalTarget : target
-  };
-
-  if (_.isString(target)) {
-    /* e.g. user.authenticate */
-    if (target.indexOf('.') > 0) {
-      // const controllerAction = target.split(".");
-      // const controllerId = controllerAction[0].toLowerCase().replace('controller', '');
-      // const action = controllerAction[1];
-      // const actionId = `${controllerId}.${action}`;
-
-      _.extend(targetInfo, self.parseAction(target));
-      const controller = controllers[targetInfo.controllerId];
-
-      if (!controller) {
-        self.logger.error(`Controller is not found: ${targetInfo.controllerId}, ignored route: ${routePath}!`);
-        return false;
-        /* parse fail */
-      }
-
-      targetInfo.fn = controller[targetInfo.action];
-
-      if (!targetInfo.fn) {
-        self.logger.error(`Controller action is not found: ${targetInfo.action}, ignored route: ${routePath}!`);
-        return false;
-        /* parse fail */
-      }
-
-      // targetInfo.action = action;
-      // targetInfo.controllerId = controllerId;
-      // targetInfo.actionId = actionId;
-      targetInfo.controller = controller;
-    } else {
-      logger.error('Ingored unknown route target: ' + target);
-    }
-  } else if (_.isArray(target)) {
-    /* Rarely... to be supported later */
-    self.logger.error(`Unsupported route target array type, ignored route: ${routePath}!`);
-    return false;
-  } else if (_.isObject(target)) {
-    _.extend(targetInfo, target);
-
-    /* For example: UserController.createUser */
-    if (target.action && _.isString(target.action) && target.action.indexOf('.') > 0) {
-      _.extend(targetInfo, self.parseAction(target.action));
-    }
-
-    if (target.view) {
-      /* do nothing */
-    } else if (target.fn) {
-      if (!_.isFunction(target.fn)) {
-        self.logger.error(`Invalid user response handler - the handler must be a function type, ignored route: ${routePath}!`);
-        return false;
-      } else {
-        /* do nothing since, user defined directly an action */
-      }
-    } else if (target.action) {
-      // targetInfo.controllerId = target.controller.toLowerCase().replace('controller', '');
-      targetInfo.controllerId = targetInfo.controllerId || target.controller.toLowerCase().replace('controller', '');
-      targetInfo.controller = controllers[targetInfo.controllerId];
-      if (!targetInfo.controller) {
-        self.logger.error(`Controller is not found: ${target.controller}, ignored route: ${routePath}!`);
-        return false;
-        /* parse fail */
-      }
-      targetInfo.fn = targetInfo.controller[targetInfo.action];
-      if (!targetInfo.fn) {
-        self.logger.error(`Controller action is not found: ${target.action}, ignored route: ${routePath}!`);
-        return false;
-        /* parse fail */
-      }
-      targetInfo.actionId = targetInfo.actionId || (targetInfo.controllerId +'.' +targetInfo.action.toLowerCase());
-    } else {
-      self.logger.error(`Invalid route target definition: ${JSON.stringify(target)}, ignored route: ${routePath}!`);
-      return false;
-    }
-  } else if (_.isFunction(target)) {
-    targetInfo.fn = target;
-  } else {
-    self.logger.error(`Invalid route target definition type: ${typeof target}, ignored route: ${routePath}!`);
-    return false;
-  }
-
-  return targetInfo;
-};
-
 MVCLoader.prototype.loadRoutes = async function (opts) {
   const loader = new RouteLoader();
-  const route = await loader.load(opts);
-  if (!_.isEmpty(route)) {
-    this.mvcModel.routes = _.merge(this.mvcModel.routes || {}, route);
-  }
-  return route;
+  return await loader.load(opts);
 };
 
 MVCLoader.prototype.loadControllers = async function (opts) {
   const loader = new ControllerLoader();
-  const controllers = await loader.load(opts);
-  if (!_.isEmpty(controllers)) {
-    this.mvcModel.controllers = _.merge(this.mvcModel.controllers || {}, controllers);
-  }
-  return controllers;
+  return await loader.load(opts);
 };
 
 MVCLoader.prototype.loadServices = async function (opts) {
@@ -358,53 +252,6 @@ MVCLoader.prototype.loadPolicies = async function (opts) {
   return policies;
 };
 
-const verbExpr = /^(all|get|post|put|delete|trace|options|connect|patch|head)\s+/i;
-
-function detectVerb(haystack) {
-  let verbSpecified = _.last(haystack.match(verbExpr) || []) || '';
-
-  verbSpecified = verbSpecified.toLowerCase();
-
-  // If a verb was specified, eliminate the verb from the original string
-  if (verbSpecified) {
-    haystack = haystack.replace(verbExpr, '');
-  }
-
-  return {
-    verb: verbSpecified,
-    original: haystack,
-    path: haystack
-  };
-}
-
-function sanitize(path, target, verb, options) {
-  options = options || {};
-
-  // If trying to bind '*', that's probably not what was intended, so fix it up
-  path = path === '*' ? '/*' : path;
-
-  // If route has an HTTP verb (e.g. `get /foo/bar`, `put /bar/foo`, etc.) parse it out,
-  const detectedVerb = detectVerb(path);
-  // then prune it from the path
-  path = detectedVerb.original;
-  // Keep track of parsed verb so we know if it was specified later
-  options.detectedVerb = detectedVerb;
-
-  // If a verb override was not specified,
-  // use the detected verb from the string route
-  if (!verb) {
-    verb = detectedVerb.verb;
-  }
-
-  return {
-    path: path,
-    target: target,
-    verb: verb,
-    options: options
-  };
-}
-
 // ┌───────────────────────────────────────────────────────────────────────────┐
 // | IMPLEMENTATION --                                                         |
 // └───────────────────────────────────────────────────────────────────────────┘
-

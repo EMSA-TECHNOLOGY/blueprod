@@ -42,6 +42,7 @@
     "glob": "^7.1.4",
     "include-all": "^4.0.3",
     "js-yaml": "^3.13.1",
-    "lodash": "^4.17.14"
+    "lodash": "^4.17.14",
+    "swagger-jsdoc": "^3.3.0"
   }
 }

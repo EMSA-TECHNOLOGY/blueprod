@@ -31,6 +31,9 @@ const ROUTE_FILE_NAME_DEFAULT = 'routes.js';
 let debug = require('debug')('ws-mvc-route');
 
 /**
+ * This class is to support simple route file definition like this:
+ *
+ * 'POST   /api/v1/users':                  'UserController.createUser',
  *
  * @class
  * @constructor
@@ -55,21 +58,23 @@ module.exports = RouteLoader;
 RouteLoader.prototype.load = async (opts) => {
   opts = opts || this.opts || {};
   const rootAppPath = opts.rootAppPath || process.env['BLUEPROD_ROOT_APP_PATH'];
-  const configDirName = process.env['BLUEPROD_CONFIG_DIR_NAME'] || 'config';
-  let routeFiles = opts.routeFiles || ['*routes*'];
-  let foundRoutes = {};
+  let findRouteFilePatterns = opts.routeFiles || ['config/**/*routes*'];
+  findRouteFilePatterns = (Array.isArray(findRouteFilePatterns) ? findRouteFilePatterns : [findRouteFilePatterns]);
+
+  let routes = {};
+  const routeFiles = [];
 
   if (!rootAppPath) {
     throw new Error('Cannot load route files, root application path is not provided!');
   }
 
-  routeFiles = (Array.isArray(routeFiles) ? routeFiles : [routeFiles]);
-  for (let i = 0; i < routeFiles.length; i++) {
-    let providedRouteFile = routeFiles[i];
+  for (let i = 0; i < findRouteFilePatterns.length; i++) {
+    let providedRouteFile = findRouteFilePatterns[i];
     let routeFileFullPath;
 
     if (!path.isAbsolute(providedRouteFile)) {
-      routeFileFullPath = path.join(rootAppPath, configDirName, providedRouteFile);
+      /* recommended so we can add search recursively */
+      routeFileFullPath = path.join(rootAppPath, providedRouteFile);
     } else {
       routeFileFullPath = providedRouteFile;
     }
@@ -84,17 +89,18 @@ RouteLoader.prototype.load = async (opts) => {
       debug('Found route file: ' +foundRouteFile);
       const ext = path.extname(foundRouteFile);
       if (ext === '.js' || ext === '.json' || ext === '.yaml') {
-        let routes;
+        routeFiles.push(foundRouteFile);
+        let routesInRouteFile;
         if (ext === '.js' || ext === '.json') {
-          routes = require(foundRouteFile);
+          routesInRouteFile = require(foundRouteFile);
         } else {
           const yaml = require('js-yaml');
-          routes = yaml.safeLoad(foundRouteFile);
+          routesInRouteFile = yaml.safeLoad(foundRouteFile);
         }
 
-        if (routes && _.isObject(routes)) {
-          routes = routes.routes || routes;
-          foundRoutes = _.merge(foundRoutes, routes);
+        if (routesInRouteFile && _.isObject(routesInRouteFile)) {
+          routesInRouteFile = routesInRouteFile.routes || routesInRouteFile;
+          routes = _.merge(routes, routesInRouteFile);
         } else {
           debug('No routes defined in file: ' +foundRouteFile);
         }
@@ -103,6 +109,7 @@ RouteLoader.prototype.load = async (opts) => {
         debug('Ignored route file: ' +foundRouteFile);
       }
     }
-  }
-  return foundRoutes;
+  } /* for -- */
+
+  return {routes, routeFiles};
 };
