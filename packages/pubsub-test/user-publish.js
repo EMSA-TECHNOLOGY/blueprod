@@ -6,8 +6,8 @@ config.reload({rootAppPath, debug: true});
 
 var services = require('../pubsub/src/blueprod-pubsub');
 let authObj = {
-  host: config.get('NATS_HOST'),
-  port: config.get('NATS_PORT'),
+  host: config.get('REDIS_HOST'),
+  port: config.get('REDIS_PORT'),
 };
 
 services.createConnection(authObj);
