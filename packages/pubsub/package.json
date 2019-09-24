@@ -1,0 +1,11 @@
+{
+  "name": "@blueprod/pubsub",
+  "version": "1.0.0",
+  "description": "This module is to support pubsub event....",
+  "main": "src/blueprod-pubsub.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "EMSA Company",
+  "license": "ISC"
+}

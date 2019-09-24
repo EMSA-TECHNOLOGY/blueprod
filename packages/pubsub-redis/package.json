@@ -1,0 +1,14 @@
+{
+  "name": "@blueprod/pubsub-redis",
+  "version": "1.0.0",
+  "description": "This module is to support pubsub event to redis server....",
+  "main": "src/pubsub-redis.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "EMSA Company",
+  "license": "ISC",
+  "dependencies": {
+    "redis": "^2.8.0"
+  }
+}
