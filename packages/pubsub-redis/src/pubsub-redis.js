@@ -49,6 +49,14 @@ const constants = {
   /* To add constants here */
 };
 
+const default_authObject = {
+  host: "127.0.0.1",
+  port: 6379,
+  password: null
+};
+
+let subscriber;
+let publisher;
 // ┌───────────────────────────────────────────────────────────────────────────┐
 // | GLOBAL VARIABLE --                                                        |
 // └───────────────────────────────────────────────────────────────────────────┘
@@ -60,7 +68,6 @@ const constants = {
 
 const PubsubRedisEventService = function () {
   this.serviceName = COMPONENT_NAME;
-  pubsubService = pubsubModules.createClient();
 };
 
 PubsubRedisEventService.constants = constants;
@@ -94,17 +101,42 @@ PubsubRedisEventService.prototype.getInstance = function () {
   return self;
 };
 
+PubsubRedisEventService.prototype.createConnection = function createConnection(authObject = {}) {
+  const self = this;
+  self.topicListeners = {};
+  let authObj = Object.assign({}, default_authObject, authObject);
+
+  authObj = {
+    host: authObj.host,
+    port: authObj.port,
+  };
+  if(authObject.password) {
+    authObj.password = authObject.password
+  }
+
+  subscriber = publisher = pubsubModules.createClient(authObj);
+  subscriber.on("message", function (channel, message) {
+    const listener = self.topicListeners[channel];
+
+    listener(message);
+  });
+};
+
 /**
  *
  * @param topic
  * @param listener
  * @return {boolean}
  */
-PubsubRedisEventService.prototype.on = function (topic, cb, listener) {
-  pubsubService.on("message", function (channel, msg) {
-    cb(JSON.parse(msg));
-  });
-  pubsubService.subscribe(topic);
+PubsubRedisEventService.prototype.on = function (topic, listener) {
+  const self = this;
+
+  if (self.topicListeners[topic]) {
+    self.unsubscribe(topic);
+  }
+
+  subscriber.subscribe(topic);
+  self.topicListeners[topic] = listener;
 };
 
 PubsubRedisEventService.prototype.emit = function (topic, eventData) {
@@ -115,11 +147,11 @@ PubsubRedisEventService.prototype.emit = function (topic, eventData) {
     data: eventData,
   };
 
-  pubsubService.publish(topic, JSON.stringify(event));
+  publisher.publish(topic, JSON.stringify(event));
 };
 
-PubsubRedisEventService.prototype.unsubscribe = function () {
-  pubsubService.unsubscribe();
+PubsubRedisEventService.prototype.unsubscribe = function (topic) {
+  subscriber.unsubscribe(topic);
 };
 
 // ┌───────────────────────────────────────────────────────────────────────────┐
