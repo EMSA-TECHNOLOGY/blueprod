@@ -1,8 +1,14 @@
+const path = require('path');
+const rootAppPath = path.join(process.cwd(), '');
+const config = require('@blueprod/config').load();
+process.env["NODE_ENV"] = 'development';
+config.reload({rootAppPath, debug: true});
+
 var services = require('../pubsub/src/blueprod-pubsub');
 
 let authObj = {
-  host: "192.168.0.123",
-  port: 6379,
+  host: config.get('NATS_HOST'),
+  port: config.get('NATS_PORT'),
 };
 services.createConnection(authObj);
 
