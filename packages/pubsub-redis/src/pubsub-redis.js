@@ -1,28 +1,3 @@
-/*#*
-***************************************************************************************************
-** Copyright © 2019 EMSA TECHNOLOGY COMPANY LTD and ÉOLANE - All Rights Reserved.
-**
-** This software is the proprietary information of EMSA TECHNOLOGY COMPANY LTD and ÉOLANE. Unauthorized
-** copying of this file, via any medium is strictly prohibited proprietary and confidential.
-**
-** File:         DistributedEventService.js
-** Version:      0.1
-** Created:      2019/09/24 09:00:00 (GMT+7)
-** Author:       <href="mailto:khanhnq@emsa-technology.com"> Khanh NGUYEN</a>
-**
-** Description:
-***************
-** A service for listening events from other processes/nodes.
-**
-** History:
-***********
-** Version 0.1  2019/09/24 09:00:00  khanhnq
-**   + Creation and implementation.
-***************************************************************************************************
-*#*/
-
-/** @module DistributedEventService */
-
 'use strict';
 
 // ┌───────────────────────────────────────────────────────────────────────────┐

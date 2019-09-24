@@ -1,6 +1,6 @@
 const config = require('./config');
-const natsImpl = require('../../pubsub-nats/src/pubsub-nats');
-const redisImpl = require('../../pubsub-redis/src/pubsub-redis');
+const natsImpl = require('@blueprod/pubsub-nats');
+const redisImpl = require('@blueprod/pubsub-redis');
 
 const constants = {
   /* To add constants here */
