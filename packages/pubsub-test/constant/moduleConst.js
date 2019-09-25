@@ -1,4 +1,5 @@
 module.exports = {
   REDIS: 'redis',
-  NATS: 'nats'
+  NATS: 'nats',
+  KAFKA: 'kafka'
 };

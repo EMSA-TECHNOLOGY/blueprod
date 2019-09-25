@@ -12,18 +12,36 @@ services:
     image: nats:2.1.0
     ports:
       - "4222:4222"
+  zookeeper:
+    image: wurstmeister/zookeeper
+    ports:
+      - "2181"
+    hostname: zookeeper
+  kafka:
+    container_name: 'kafka'
+    image: wurstmeister/kafka:latest
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: localhost
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+    depends_on:
+      - zookeeper
   pubsub:
     container_name: 'pubsub'
     image: emsa/pubsub:1.0.0
+    restart: on-failure
     build:
       context: ./..
       dockerfile: ./docker/Dockerfile
     depends_on:
       - redis
       - nats
+      - kafka
     environment:
       - REDIS_HOST=$REDIS_HOST
       - NATS_HOST=$NATS_HOST
+      - KAFKA_HOST=$KAFKA_HOST
 volumes:
   redis_data:
 

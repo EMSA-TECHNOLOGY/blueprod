@@ -13,11 +13,16 @@ testConst[moduleConst.NATS] = {};
 testConst[moduleConst.NATS].name = moduleConst.NATS;
 testConst[moduleConst.NATS].host = serverConst.NATS_HOST;
 testConst[moduleConst.NATS].port = serverConst.NATS_PORT;
+/* KAFKA */
+testConst[moduleConst.KAFKA] = {};
+testConst[moduleConst.KAFKA].name = moduleConst.KAFKA;
+testConst[moduleConst.KAFKA].host = serverConst.KAFKA_HOST;
+testConst[moduleConst.KAFKA].port = serverConst.KAFKA_PORT;
 /* -- Other -- */
 
 /* Switch module here -----------> */
 /* .REDIS/.NATS/.... */
-const currentModule = moduleConst.NATS;
+const currentModule = moduleConst.KAFKA;
 
 module.exports = {
   NAME: testConst[currentModule].name,
