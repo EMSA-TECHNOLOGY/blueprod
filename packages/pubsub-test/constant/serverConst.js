@@ -1,0 +1,6 @@
+module.exports = {
+  REDIS_HOST: 'REDIS_HOST',
+  REDIS_PORT: 'REDIS_PORT',
+  NATS_HOST: 'NATS_HOST',
+  NATS_PORT: 'NATS_PORT'
+};
