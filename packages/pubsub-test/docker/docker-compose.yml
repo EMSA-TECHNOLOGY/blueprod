@@ -1,0 +1,32 @@
+version: '3.7'
+services:
+  redis:
+    container_name: 'redis'
+    image: redis:5.0.5
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+  nats:
+    container_name: 'nats'
+    image: nats:2.1.0
+    ports:
+      - "4222:4222"
+  pubsub:
+    container_name: 'pubsub'
+    image: emsa/pubsub:1.0.0
+    build:
+      context: ./..
+      dockerfile: ./docker/Dockerfile
+    depends_on:
+      - redis
+      - nats
+    environment:
+      - REDIS_HOST=$REDIS_HOST
+      - NATS_HOST=$NATS_HOST
+volumes:
+  redis_data:
+
+networks:
+  default:
+    name: blueprod-pubsub

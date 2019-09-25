@@ -1,26 +1,24 @@
 const path = require('path');
 const rootAppPath = path.join(process.cwd(), '');
-const config = require('@blueprod/config').load();
+const config = require('@blueprod/config');
 process.env["NODE_ENV"] = 'development';
-config.reload({rootAppPath, debug: true});
+config.reload({rootAppPath});
 
-var services = require('../pubsub/src/blueprod-pubsub');
+let services = require('@blueprod/pubsub');
 
-let authObj = {
+const authObj = {
   host: config.get('REDIS_HOST'),
   port: config.get('REDIS_PORT'),
 };
 services.createConnection(authObj);
 
-let listener = (msg) => {
+const listener = (msg) => {
   console.log('Received a message: ' + msg);
 };
 
-let listener1 = (msg) => {
+const listener1 = (msg) => {
   console.log('Received a message: ' + msg +111111);
 };
-
-
 
 services.on('foo', listener);
 // services.on('foo', listener1);
