@@ -4,7 +4,12 @@ const config = require('@blueprod/config');
 process.env["NODE_ENV"] = 'development';
 config.reload({rootAppPath});
 
-let services = require('@blueprod/pubsub');
+const constants = {
+  /* To add constants here */
+  REDIS: 'redis',
+  NATS: 'nats',
+};
+let services = require('@blueprod/pubsub')(constants.NATS);
 
 const authObj = {
   host: config.get('REDIS_HOST'),

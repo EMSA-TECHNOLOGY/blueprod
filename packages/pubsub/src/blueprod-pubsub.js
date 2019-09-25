@@ -21,4 +21,4 @@ const PubsubService = function (service) {
   }
 };
 
-module.exports = new PubsubService();
+module.exports = PubsubService;
