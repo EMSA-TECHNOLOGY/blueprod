@@ -82,12 +82,17 @@ PubSubKafkaEventService.prototype.getInstance = function () {
 PubSubKafkaEventService.prototype.createConnection = function createConnection(authObject = {}) {
   const self = this;
 
-  if (!authObject || !authObject.host || !authObject.port) {
-    authObject.host = default_authObject.host;
-    authObject.port = default_authObject.port;
+  let authObj = Object.assign({}, default_authObject, authObject);
+
+  if(!authObj.host) {
+    authObj.host = default_authObject.host;
   }
 
-  client = new pubsubModules.KafkaClient({ kafkaHost: `${authObject.host}:${authObject.port}` });
+  if(!authObj.port) {
+    authObj.port = default_authObject.port;
+  }
+
+  client = new pubsubModules.KafkaClient({ kafkaHost: `${authObj.host}:${authObj.port}` });
 
   publisher = new pubsubModules.Producer(client);
   subscriber = new pubsubModules.Consumer(client, [], {autoCommit: true});
