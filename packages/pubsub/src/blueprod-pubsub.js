@@ -1,7 +1,7 @@
 const config = require('./config');
 const natsImpl = require('@blueprod/pubsub-nats');
 const redisImpl = require('@blueprod/pubsub-redis');
-const kafkaImpl = require("../../pubsub-kafka/src/pubsub-kafka");
+const kafkaImpl = require("@blueprod/pubsub-kafka");
 
 const constants = {
   /* To add constants here */
