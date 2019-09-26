@@ -27,7 +27,7 @@ const constants = {
 
 const default_authObject = {
   host: "127.0.0.1",
-  port: 4222,
+  port: 9092,
   username: null,
   password: null
 };
@@ -81,11 +81,13 @@ PubSubKafkaEventService.prototype.getInstance = function () {
 
 PubSubKafkaEventService.prototype.createConnection = function createConnection(authObject = {}) {
   const self = this;
-  const option = {
-    kafkaHost: 'kafka:9092',
-    // requestTimeout: 0
-  };
-  client = new pubsubModules.KafkaClient(option);
+
+  if (!authObject || !authObject.host || !authObject.port) {
+    authObject.host = default_authObject.host;
+    authObject.port = default_authObject.port;
+  }
+
+  client = new pubsubModules.KafkaClient({ kafkaHost: `${authObject.host}:${authObject.port}` });
 
   publisher = new pubsubModules.Producer(client);
   subscriber = new pubsubModules.Consumer(client, [], {autoCommit: true});

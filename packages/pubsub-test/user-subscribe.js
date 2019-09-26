@@ -22,19 +22,18 @@ const listener = (msg) => {
   console.log('Received a message: ' + msg + ' take ' + (t3-t1) + ' milliseconds');
 };
 
-const listener1 = (msg) => {
-  const t4 = performance.now();
-  console.log('Received a message: ' + msg + ' take ' + (t4-t2) + ' milliseconds');
-};
+// const listener1 = (msg) => {
+//   const t4 = performance.now();
+//   console.log('Received a message: ' + msg + ' take ' + (t4-t2) + ' milliseconds');
+// };
 
 const t1 = performance.now();
 console.log('Starting listen on topic [foo]');
 services.on('foo', listener);
-// services.on('foo', listener1);
 
-const t2 = performance.now();
-console.log('Starting listen on topic [foo]');
-services.on('foo1', listener1);
+// const t2 = performance.now();
+// console.log('Starting listen on topic [foo]');
+// services.on('foo1', listener1);
 
 // setTimeout(function () {
 //   console.log("unsubscribe");

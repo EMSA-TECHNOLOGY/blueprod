@@ -1,0 +1,14 @@
+{
+  "name": "@blueprod/pubsub-kafka",
+  "version": "0.0.1",
+  "description": "This module is to support pubsub event to kafka server....",
+  "main": "src/pubsub-kafka.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "EMSA Company",
+  "license": "ISC",
+  "dependencies": {
+    "kafka-node": "^4.1.3"
+  }
+}

@@ -7,9 +7,6 @@
 const process = require('process');
 const pubsubModules = require("nats");
 
-let pubsubService = null;
-let sid;
-
 // ┌───────────────────────────────────────────────────────────────────────────┐
 // | IMPORT --                                                                 |
 // └───────────────────────────────────────────────────────────────────────────┘
@@ -72,7 +69,7 @@ module.exports = new PubSubNatsEventService();
 
 PubSubNatsEventService.prototype.getInstance = function () {
   const self = this;
-  if (!self || pubsubService === null) {
+  if (!self) {
     return new PubSubNatsEventService();
   }
 

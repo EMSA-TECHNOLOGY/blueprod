@@ -14,11 +14,5 @@ const authObj = {
 };
 
 services.createConnection(authObj);
-setTimeout(function () {
 
-// Simple Publisher
-  services.emit('foo', 'Hello World!');
-  services.emit('foo1', 'Hello World!');
-}, 1000);
-
-
+services.emit('foo', 'Hello World!');

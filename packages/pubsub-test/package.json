@@ -4,7 +4,7 @@
   "description": "pubsub test",
   "main": "user-publish.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node user-subscribe.js & node user-publish.js"
   },
   "author": "Emsa Company",
   "license": "ISC",

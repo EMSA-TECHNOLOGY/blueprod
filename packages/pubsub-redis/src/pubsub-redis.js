@@ -7,8 +7,6 @@
 const process = require('process');
 const pubsubModules = require("redis");
 
-let pubsubService = null;
-
 // ┌───────────────────────────────────────────────────────────────────────────┐
 // | IMPORT --                                                                 |
 // └───────────────────────────────────────────────────────────────────────────┘
@@ -69,7 +67,7 @@ module.exports = new PubsubRedisEventService();
 
 PubsubRedisEventService.prototype.getInstance = function () {
   const self = this;
-  if (!self || pubsubService === null) {
+  if (!self) {
     return new PubsubRedisEventService();
   }
 
