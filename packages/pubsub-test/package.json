@@ -10,6 +10,6 @@
   "license": "ISC",
   "dependencies": {
     "@blueprod/config": "^0.2.4",
-    "@blueprod/pubsub": "0.0.1"
+    "@blueprod/pubsub": "0.0.2"
   }
 }
