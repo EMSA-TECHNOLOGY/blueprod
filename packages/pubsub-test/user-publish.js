@@ -13,8 +13,9 @@ const authObj = {
   port: config.get(hostConf.PORT),
 };
 
+services.createConnection(authObj);
 setTimeout(function () {
-  services.createConnection(authObj);
+
 // Simple Publisher
   services.emit('foo', 'Hello World!');
   services.emit('foo1', 'Hello World!');

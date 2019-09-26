@@ -9,7 +9,6 @@ const pubsubModules = require("kafka-node");
 
 let client = null;
 let pubsubService = null;
-let sid;
 
 // ┌───────────────────────────────────────────────────────────────────────────┐
 // | IMPORT --                                                                 |
@@ -82,14 +81,34 @@ PubSubKafkaEventService.prototype.getInstance = function () {
 
 PubSubKafkaEventService.prototype.createConnection = function createConnection(authObject = {}) {
   const self = this;
-  client = new pubsubModules.KafkaClient();
+  const option = {
+    kafkaHost: 'kafka:9092',
+    // requestTimeout: 0
+  };
+  client = new pubsubModules.KafkaClient(option);
 
   publisher = new pubsubModules.Producer(client);
+  subscriber = new pubsubModules.Consumer(client, [], {autoCommit: true});
+
   self.topicListeners = {};
   self.isPublishReady = false;
 
   publisher.on('ready', function () {
     self.isPublishReady = true;
+  });
+  publisher.on('error', (err) => {
+    console.log(`publisher error: ${err}`);
+  });
+
+  subscriber.on('message', function (message) {
+    const listener = self.topicListeners[message.topic];
+
+    if (listener) {
+      listener(message.value);
+    }
+  });
+  subscriber.on('error', (err) => {
+    console.log(`subscriber error: ${err}`);
   });
 };
 
@@ -101,19 +120,13 @@ PubSubKafkaEventService.prototype.createConnection = function createConnection(a
  */
 PubSubKafkaEventService.prototype.on = function (topic, listener) {
   const self = this;
-
-  if (!subscriber) {
-    subscriber = new pubsubModules.Consumer(client, [], {autoCommit: true});
-    subscriber.on('message', function (message) {
-      const listener = self.topicListeners[message.topic];
-
-      listener(message);
-    });
-  }
-
+  // console.log(subscriber);
   subscriber.addTopics([topic], function (err, added) {
+    if (err) {
+      console.log("addError:  " + err);
+    }
+    // console.log("topic:  " + added);
   });
-
   self.topicListeners[topic] = listener;
 };
 
@@ -129,7 +142,10 @@ PubSubKafkaEventService.prototype.emit = function (topic, eventData) {
   ];
 
   publisher.send(payloads, function (err, data) {
-    // console.log(data);
+    if (err) {
+      console.log("sendError:  " + err);
+    }
+    // console.log("sendPl:  " + data);
   });
 };
 
