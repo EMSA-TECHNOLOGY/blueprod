@@ -22,15 +22,12 @@ const constants = {
   /* To add constants here */
 };
 
-const default_authObject = {
+const DEFAULT_NATS_CONNECTION = Object.freeze({
   host: "127.0.0.1",
   port: 4222,
   username: null,
   password: null
-};
-
-let subscriber;
-let publisher;
+});
 
 // ┌───────────────────────────────────────────────────────────────────────────┐
 // | GLOBAL VARIABLE --                                                        |
@@ -41,8 +38,13 @@ let publisher;
 // | CLASS DECLARATION ++                                                      |
 // └───────────────────────────────────────────────────────────────────────────┘
 
-const PubSubNatsEventService = function () {
-  this.serviceName = COMPONENT_NAME;
+const PubSubNatsEventService = function (opts = {}) {
+  const self = this;
+  self.serviceName = COMPONENT_NAME;
+
+  self.topics = {};
+
+  self.subscriber = self.publisher = pubsubModules.connect(opts);
 };
 
 PubSubNatsEventService.constants = constants;
@@ -56,7 +58,18 @@ PubSubNatsEventService.constants = constants;
 // | EXPORT ++                                                                 |
 // └───────────────────────────────────────────────────────────────────────────┘
 
-module.exports = new PubSubNatsEventService();
+module.exports = function (opts = {}) {
+  let natsHost= opts.host || process.env.NATS_HOST || DEFAULT_NATS_CONNECTION.host;
+  let natsPort= opts.port || process.env.NATS_PORT || DEFAULT_NATS_CONNECTION.port;
+
+  let connection = {
+    url: `nats://${natsHost}:${natsPort}`,
+    user: opts.username || DEFAULT_NATS_CONNECTION.username,
+    pass: opts.password || DEFAULT_NATS_CONNECTION.password
+  };
+
+  return new PubSubNatsEventService(connection);
+};
 
 // ┌───────────────────────────────────────────────────────────────────────────┐
 // | EXPORT --                                                                 |
@@ -66,29 +79,6 @@ module.exports = new PubSubNatsEventService();
 // ┌───────────────────────────────────────────────────────────────────────────┐
 // | IMPLEMENTATION ++                                                         |
 // └───────────────────────────────────────────────────────────────────────────┘
-
-PubSubNatsEventService.prototype.getInstance = function () {
-  const self = this;
-  if (!self) {
-    return new PubSubNatsEventService();
-  }
-
-  return self;
-};
-
-PubSubNatsEventService.prototype.createConnection = function createConnection(authObject = {}) {
-  const self = this;
-  self.topics = {};
-  let authObj = Object.assign({}, default_authObject, authObject);
-
-  authObj = {
-    'url': `nats://${authObj.host}:${authObj.port}`,
-    'user': authObj.username,
-    'pass': authObj.password
-  };
-
-  subscriber = publisher = pubsubModules.connect(authObj);
-};
 
 /**
  *
@@ -104,18 +94,18 @@ PubSubNatsEventService.prototype.on = function (topic, listener) {
     self.unsubscribe(topic);
   }
 
-  unsubscribe = subscriber.subscribe(topic, listener);
+  unsubscribe = self.subscriber.subscribe(topic, listener);
   self.topics[topic] = unsubscribe;
 };
 
 PubSubNatsEventService.prototype.emit = function (topic, eventData) {
-  // const self = this;
+  const self = this;
   let event = {
     topic: topic,
     pid: process.pid,
     data: eventData,
   };
-  publisher.publish(topic, JSON.stringify(event));
+  self.publisher.publish(topic, JSON.stringify(event));
 };
 
 PubSubNatsEventService.prototype.unsubscribe = function (topic) {
@@ -123,7 +113,7 @@ PubSubNatsEventService.prototype.unsubscribe = function (topic) {
   let unsubscribe = self.topics[topic];
 
   if (unsubscribe) {
-    subscriber.unsubscribe(unsubscribe);
+    self.subscriber.unsubscribe(unsubscribe);
   }
 };
 

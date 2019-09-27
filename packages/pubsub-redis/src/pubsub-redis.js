@@ -22,14 +22,12 @@ const constants = {
   /* To add constants here */
 };
 
-const default_authObject = {
+const DEFAULT_REDIS_CONNECTION = Object.freeze({
   host: "127.0.0.1",
   port: 6379,
   password: null
-};
+});
 
-let subscriber;
-let publisher;
 // ┌───────────────────────────────────────────────────────────────────────────┐
 // | GLOBAL VARIABLE --                                                        |
 // └───────────────────────────────────────────────────────────────────────────┘
@@ -39,8 +37,18 @@ let publisher;
 // | CLASS DECLARATION ++                                                      |
 // └───────────────────────────────────────────────────────────────────────────┘
 
-const PubsubRedisEventService = function () {
-  this.serviceName = COMPONENT_NAME;
+const PubsubRedisEventService = function (opts = {}) {
+  const self = this;
+  self.serviceName = COMPONENT_NAME;
+
+  self.topicListeners = {};
+
+  self.subscriber = self.publisher = pubsubModules.createClient(opts);
+  self.subscriber.on("message", function (channel, message) {
+    const listener = self.topicListeners[channel];
+
+    listener(message);
+  });
 };
 
 PubsubRedisEventService.constants = constants;
@@ -54,7 +62,18 @@ PubsubRedisEventService.constants = constants;
 // | EXPORT ++                                                                 |
 // └───────────────────────────────────────────────────────────────────────────┘
 
-module.exports = new PubsubRedisEventService();
+module.exports = function (opts = {}) {
+  let connection = {
+    host: opts.host || process.env.REDIS_HOST || DEFAULT_REDIS_CONNECTION.host,
+    port: opts.port || process.env.REDIS_PORT || DEFAULT_REDIS_CONNECTION.port
+  };
+
+  if (opts.password) {
+    connection.password = opts.password
+  }
+
+  return new PubsubRedisEventService(connection);
+};
 
 // ┌───────────────────────────────────────────────────────────────────────────┐
 // | EXPORT --                                                                 |
@@ -64,36 +83,6 @@ module.exports = new PubsubRedisEventService();
 // ┌───────────────────────────────────────────────────────────────────────────┐
 // | IMPLEMENTATION ++                                                         |
 // └───────────────────────────────────────────────────────────────────────────┘
-
-PubsubRedisEventService.prototype.getInstance = function () {
-  const self = this;
-  if (!self) {
-    return new PubsubRedisEventService();
-  }
-
-  return self;
-};
-
-PubsubRedisEventService.prototype.createConnection = function createConnection(authObject = {}) {
-  const self = this;
-  self.topicListeners = {};
-  let authObj = Object.assign({}, default_authObject, authObject);
-
-  authObj = {
-    host: authObj.host,
-    port: authObj.port,
-  };
-  if(authObject.password) {
-    authObj.password = authObject.password
-  }
-
-  subscriber = publisher = pubsubModules.createClient(authObj);
-  subscriber.on("message", function (channel, message) {
-    const listener = self.topicListeners[channel];
-
-    listener(message);
-  });
-};
 
 /**
  *
@@ -108,23 +97,24 @@ PubsubRedisEventService.prototype.on = function (topic, listener) {
     self.unsubscribe(topic);
   }
 
-  subscriber.subscribe(topic);
+  self.subscriber.subscribe(topic);
   self.topicListeners[topic] = listener;
 };
 
 PubsubRedisEventService.prototype.emit = function (topic, eventData) {
-  // const self = this;
+  const self = this;
   let event = {
     topic: topic,
     pid: process.pid,
     data: eventData,
   };
 
-  publisher.publish(topic, JSON.stringify(event));
+  self.publisher.publish(topic, JSON.stringify(event));
 };
 
 PubsubRedisEventService.prototype.unsubscribe = function (topic) {
-  subscriber.unsubscribe(topic);
+  const self = this;
+  self.subscriber.unsubscribe(topic);
 };
 
 // ┌───────────────────────────────────────────────────────────────────────────┐

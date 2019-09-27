@@ -10,16 +10,16 @@ const constants = {
   KAFKA: 'kafka'
 };
 
-const PubsubService = function (service) {
+const PubsubService = function (opts, service) {
   service = service || config.name;
 
   switch (service) {
     case constants.REDIS:
-      return redisImpl.getInstance();
+      return redisImpl(opts);
     case constants.NATS:
-      return natsImpl.getInstance();
+      return natsImpl(opts);
     case constants.KAFKA:
-      return kafkaImpl.getInstance();
+      return kafkaImpl(opts);
     default:
       break;
   }

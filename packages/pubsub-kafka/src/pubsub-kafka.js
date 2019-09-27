@@ -7,9 +7,6 @@
 const process = require('process');
 const pubsubModules = require("kafka-node");
 
-let client = null;
-let pubsubService = null;
-
 // ┌───────────────────────────────────────────────────────────────────────────┐
 // | IMPORT --                                                                 |
 // └───────────────────────────────────────────────────────────────────────────┘
@@ -25,15 +22,12 @@ const constants = {
   /* To add constants here */
 };
 
-const default_authObject = {
+const DEFAULT_KAFKA_CONNECTION = Object.freeze({
   host: "127.0.0.1",
   port: 9092,
   username: null,
   password: null
-};
-
-let subscriber;
-let publisher;
+});
 
 // ┌───────────────────────────────────────────────────────────────────────────┐
 // | GLOBAL VARIABLE --                                                        |
@@ -44,8 +38,36 @@ let publisher;
 // | CLASS DECLARATION ++                                                      |
 // └───────────────────────────────────────────────────────────────────────────┘
 
-const PubSubKafkaEventService = function () {
-  this.serviceName = COMPONENT_NAME;
+const PubSubKafkaEventService = function (opts = {}) {
+  const self = this;
+  self.serviceName = COMPONENT_NAME;
+
+  let client = new pubsubModules.KafkaClient(opts);
+
+  self.publisher = new pubsubModules.Producer(client);
+  self.subscriber = new pubsubModules.Consumer(client, [], {autoCommit: true});
+
+  self.topicListeners = {};
+  self.isPublishReady = false;
+
+  self.publisher.on('ready', function () {
+    self.isPublishReady = true;
+  });
+
+  self.publisher.on('error', (err) => {
+    console.log(`Publisher Error: ${err}`);
+  });
+
+  self.subscriber.on('message', function (message) {
+    const listener = self.topicListeners[message.topic];
+
+    if (listener) {
+      listener(message.value);
+    }
+  });
+  self.subscriber.on('error', (err) => {
+    console.log(`Subscriber Error: ${err}`);
+  });
 };
 
 PubSubKafkaEventService.constants = constants;
@@ -59,7 +81,16 @@ PubSubKafkaEventService.constants = constants;
 // | EXPORT ++                                                                 |
 // └───────────────────────────────────────────────────────────────────────────┘
 
-module.exports = new PubSubKafkaEventService();
+module.exports = function (opts = {}) {
+  let kafkaHost = opts.host || process.env.KAFKA_HOST || DEFAULT_KAFKA_CONNECTION.host;
+  let kafkaPort = opts.port || process.env.KAFKA_PORT || DEFAULT_KAFKA_CONNECTION.port;
+
+  let connection = {
+    kafkaHost: `${kafkaHost}:${kafkaPort}`
+  };
+
+  return new PubSubKafkaEventService(connection);
+};
 
 // ┌───────────────────────────────────────────────────────────────────────────┐
 // | EXPORT --                                                                 |
@@ -70,55 +101,6 @@ module.exports = new PubSubKafkaEventService();
 // | IMPLEMENTATION ++                                                         |
 // └───────────────────────────────────────────────────────────────────────────┘
 
-PubSubKafkaEventService.prototype.getInstance = function () {
-  const self = this;
-  if (!self || pubsubService === null) {
-    return new PubSubKafkaEventService();
-  }
-
-  return self;
-};
-
-PubSubKafkaEventService.prototype.createConnection = function createConnection(authObject = {}) {
-  const self = this;
-
-  let authObj = Object.assign({}, default_authObject, authObject);
-
-  if(!authObj.host) {
-    authObj.host = default_authObject.host;
-  }
-
-  if(!authObj.port) {
-    authObj.port = default_authObject.port;
-  }
-
-  client = new pubsubModules.KafkaClient({ kafkaHost: `${authObj.host}:${authObj.port}` });
-
-  publisher = new pubsubModules.Producer(client);
-  subscriber = new pubsubModules.Consumer(client, [], {autoCommit: true});
-
-  self.topicListeners = {};
-  self.isPublishReady = false;
-
-  publisher.on('ready', function () {
-    self.isPublishReady = true;
-  });
-  publisher.on('error', (err) => {
-    console.log(`publisher error: ${err}`);
-  });
-
-  subscriber.on('message', function (message) {
-    const listener = self.topicListeners[message.topic];
-
-    if (listener) {
-      listener(message.value);
-    }
-  });
-  subscriber.on('error', (err) => {
-    console.log(`subscriber error: ${err}`);
-  });
-};
-
 /**
  *
  * @param topic
@@ -127,17 +109,16 @@ PubSubKafkaEventService.prototype.createConnection = function createConnection(a
  */
 PubSubKafkaEventService.prototype.on = function (topic, listener) {
   const self = this;
-  // console.log(subscriber);
-  subscriber.addTopics([topic], function (err, added) {
+  self.subscriber.addTopics([topic], function (err, added) {
     if (err) {
-      console.log("addError:  " + err);
+      console.log("Add Topic Error:  " + err);
     }
-    // console.log("topic:  " + added);
   });
   self.topicListeners[topic] = listener;
 };
 
 PubSubKafkaEventService.prototype.emit = function (topic, eventData) {
+  const self = this;
   let event = {
     topic: topic,
     pid: process.pid,
@@ -148,19 +129,20 @@ PubSubKafkaEventService.prototype.emit = function (topic, eventData) {
     {topic: topic, messages: [JSON.stringify(event)]}
   ];
 
-  publisher.send(payloads, function (err, data) {
+  self.publisher.send(payloads, function (err, data) {
     if (err) {
-      console.log("sendError:  " + err);
+      console.log("Send Data Error:  " + err);
     }
-    // console.log("sendPl:  " + data);
   });
 };
 
 PubSubKafkaEventService.prototype.unsubscribe = function (topic) {
   const self = this;
 
-  subscriber.removeTopics([topic], function (err, removed) {
-    console.log(`Removed ${topic}!!!!!!`)
+  self.subscriber.removeTopics([topic], function (err, removed) {
+    if (err) {
+      console.log("Unsubscribe Topic Error:  " + err);
+    }
   });
 };
 

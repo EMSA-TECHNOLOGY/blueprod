@@ -6,13 +6,14 @@ const config = require('@blueprod/config');
 process.env["NODE_ENV"] = 'development';
 config.reload({rootAppPath});
 
-let services = require('@blueprod/pubsub')(hostConf.NAME);
+let pubsubService = require('@blueprod/pubsub');
 
 const authObj = {
   host: config.get(hostConf.HOST),
   port: config.get(hostConf.PORT),
 };
 
-services.createConnection(authObj);
+let services = pubsubService(authObj, hostConf.NAME);
 
 services.emit('foo', 'Hello World!');
+services.emit('foo1', 'Hello World!');

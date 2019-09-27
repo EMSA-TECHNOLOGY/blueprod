@@ -7,13 +7,14 @@ const config = require('@blueprod/config');
 process.env["NODE_ENV"] = 'development';
 config.reload({rootAppPath});
 
-let services = require('@blueprod/pubsub')(hostConf.NAME);
+let pubsubService = require('@blueprod/pubsub');
 
 const authObj = {
   host: config.get(hostConf.HOST),
   port: config.get(hostConf.PORT),
 };
-services.createConnection(authObj);
+let services = pubsubService(authObj, hostConf.NAME);
+
 
 console.log(`RUNNING WITH [${hostConf.NAME}]..................`);
 
@@ -31,11 +32,13 @@ const t1 = performance.now();
 console.log('Starting listen on topic [foo]');
 services.on('foo', listener);
 
+services.on('foo1', listener);
+
 // const t2 = performance.now();
 // console.log('Starting listen on topic [foo]');
 // services.on('foo1', listener1);
 
-// setTimeout(function () {
-//   console.log("unsubscribe");
-//   services.unsubscribe('foo');
-// },10000);
+setTimeout(function () {
+  console.log("unsubscribe");
+  services.unsubscribe('foo');
+},10000);
