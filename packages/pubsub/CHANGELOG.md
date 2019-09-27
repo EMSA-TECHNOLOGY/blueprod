@@ -6,3 +6,4 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 ## 0.1 (2019-09-27)
  
 - Define README.md + update header
+- Simplify default parameter

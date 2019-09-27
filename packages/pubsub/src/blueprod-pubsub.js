@@ -16,6 +16,8 @@
 ***************************************************************************************************
 *#*/
 
+'use strict';
+
 const config = require('./config');
 const natsImpl = require('@blueprod/pubsub-nats');
 const redisImpl = require('@blueprod/pubsub-redis');
@@ -28,8 +30,8 @@ const constants = {
   KAFKA: 'kafka'
 };
 
-const PubsubService = function (opts, service) {
-  service = service || config.name;
+const PubsubService = function (opts) {
+  const service = opts.name || config.name;
 
   switch (service) {
     case constants.REDIS:

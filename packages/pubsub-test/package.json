@@ -9,7 +9,7 @@
   "author": "Emsa Company",
   "license": "ISC",
   "dependencies": {
-    "@blueprod/config": "^0.2.4",
-    "@blueprod/pubsub": "0.0.2"
+    "@blueprod/config": "^0.2.8",
+    "@blueprod/pubsub": "0.1"
   }
 }

@@ -63,7 +63,7 @@ const PubSubKafkaEventService = function (opts = {}) {
   let client = new pubsubModules.KafkaClient(opts);
 
   self.publisher = new pubsubModules.Producer(client);
-  self.subscriber = new pubsubModules.Consumer(client, [], {autoCommit: true});
+  self.subscriber = new pubsubModules.Consumer(client, [], {autoCommit: false});
 
   self.topicListeners = {};
   self.isPublishReady = false;
