@@ -73,7 +73,8 @@ const PubSubKafkaEventService = function (opts = {}) {
   });
 
   self.publisher.on('error', (err) => {
-    console.log(`Publisher Error: ${err}`);
+    // console.log(`Publisher Error: ${err}`);
+    throw err;
   });
 
   self.subscriber.on('message', function (message) {
@@ -84,7 +85,8 @@ const PubSubKafkaEventService = function (opts = {}) {
     }
   });
   self.subscriber.on('error', (err) => {
-    console.log(`Subscriber Error: ${err}`);
+    // console.log(`Subscriber Error: ${err}`);
+    throw err;
   });
 };
 
@@ -131,7 +133,8 @@ PubSubKafkaEventService.prototype.on = function (topic, listener) {
     if (err) {
       self.publisher.createTopics([topic], true, function (err, data) {
         if (err) {
-          console.log("Add Topic Error:  " + err);
+          // console.log("Add Topic Error:  " + err);
+          throw err;
         }
         if (data) {
           self.on(topic, listener);
@@ -156,7 +159,8 @@ PubSubKafkaEventService.prototype.emit = function (topic, eventData) {
 
   self.publisher.send(payloads, function (err, data) {
     if (err) {
-      console.log("Send Data Error:  " + err);
+      // console.log("Send Data Error:  " + err);
+      throw err;
     }
   });
 };
@@ -166,7 +170,8 @@ PubSubKafkaEventService.prototype.unsubscribe = function (topic) {
 
   self.subscriber.removeTopics([topic], function (err, removed) {
     if (err) {
-      console.log("Unsubscribe Topic Error:  " + err);
+      // console.log("Unsubscribe Topic Error:  " + err);
+      throw err;
     }
   });
 };
