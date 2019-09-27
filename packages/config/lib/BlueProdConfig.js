@@ -103,7 +103,7 @@ BlueProdConfig.prototype.load = function (opts = {}) {
 
   self.nodeEnv = nodeEnv;
   /* Keep a frozen copy of node env vars */
-  self.env = process.env;
+  //self.env = process.env;
 
   if (fs.existsSync(self.rootConfigPath)) {
     self.loadConfigInPath(self.rootConfigPath);

@@ -19,4 +19,4 @@ services:
       - zookeeper
 networks:
   default:
-    name: blueprod-pubsub
+    name: blueprod_net

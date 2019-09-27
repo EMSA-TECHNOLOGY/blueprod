@@ -1,6 +1,6 @@
 {
   "name": "@blueprod/pubsub",
-  "version": "0.1",
+  "version": "0.1.0",
   "description": "This module is to support pubsub event....",
   "main": "src/blueprod-pubsub.js",
   "scripts": {
@@ -21,8 +21,8 @@
   },
   "homepage": "https://github.com/EMSA-TECHNOLOGY/blueprod/tree/master/packages/pubsub#readme",
   "dependencies": {
-    "@blueprod/pubsub-kafka": "0.1",
-    "@blueprod/pubsub-nats": "0.1",
-    "@blueprod/pubsub-redis": "0.1"
+    "@blueprod/pubsub-kafka": "0.1.0",
+    "@blueprod/pubsub-nats": "0.1.0",
+    "@blueprod/pubsub-redis": "0.1.0"
   }
 }

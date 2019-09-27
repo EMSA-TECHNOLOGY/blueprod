@@ -1,4 +1,15 @@
-# To execute pubsub test
+# PubSub Test
+
+The purpose of this module is to test various PubSub implementation under redis, nats, kafka,...
+
+## Configuration
+
+To change the target implementation (i.e. redis/nats/kafka/...) please update file:
+
+
+
+# How To Execute Tests
+
 1. Change module name to the module your want in **/config/host-config.js**
 Ex: const currentModule = moduleConst.NATS; /* .REDIS .KAFKA */
 3. docker-compose up -> run all redis/nats/kafka server

@@ -44,5 +44,6 @@
     "js-yaml": "^3.13.1",
     "lodash": "^4.17.14",
     "swagger-jsdoc": "^3.3.0"
-  }
+  },
+  "gitHead": "eee2afafbcc00f272cbea8cc26a054fa0d1d4fbc"
 }

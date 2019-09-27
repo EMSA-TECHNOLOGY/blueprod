@@ -35,6 +35,7 @@ You have several options to provide the root application path or it will be dete
 ```javascript
 const config = require('blueprod-config').load();
 let configValue = config.get('app_key1')
+let configValue2 = config.properties.app_key2
 ```
 
 ## Options

@@ -1,6 +1,6 @@
 {
   "name": "@blueprod/pubsub-nats",
-  "version": "0.1",
+  "version": "0.1.0",
   "description": "This module is to support pubsub event to nats server....",
   "main": "src/pubsub-nats.js",
   "scripts": {

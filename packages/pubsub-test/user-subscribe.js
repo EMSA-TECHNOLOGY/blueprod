@@ -1,28 +1,23 @@
+process.env["NODE_ENV"] = 'test';
+
 const path = require('path');
 const { performance } = require('perf_hooks');
-const hostConf = require('./config/host-config');
 
 const rootAppPath = path.join(process.cwd(), '');
-const config = require('@blueprod/config').load();
-process.env["NODE_ENV"] = 'development';
-
-// process.env["REDIS_HOST"] = 'redis';
-// process.env["REDIS_PORT"] = 'port';
-
-config.reload({rootAppPath});
+const config = require('@blueprod/config').load({rootAppPath});
 
 let pubsubService = require('@blueprod/pubsub');
 
+const TEST_SERVER = config.properties.TEST_SERVER;
 const authObj = {
-  name: hostConf.NAME,
-  host: config.get(hostConf.HOST),
-  port: config.get(hostConf.PORT),
+  name: TEST_SERVER.NAME,
+  host: config.get(TEST_SERVER.HOST),
+  port: config.get(TEST_SERVER.PORT),
 };
 
 let services = pubsubService(authObj);
 
-
-console.log(`RUNNING WITH [${hostConf.NAME}]..................`);
+console.log(`RUNNING WITH [${TEST_SERVER.NAME}]..................`);
 
 const listener = (msg) => {
   const t3 = performance.now();

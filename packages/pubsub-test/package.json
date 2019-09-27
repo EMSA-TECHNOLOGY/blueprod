@@ -1,15 +1,25 @@
 {
   "name": "@blueprod/pubsub-test",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "pubsub test",
   "main": "user-publish.js",
   "scripts": {
     "test": "node user-subscribe.js & node user-publish.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EMSA-TECHNOLOGY/blueprod.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "author": "Emsa Company",
   "license": "ISC",
   "dependencies": {
     "@blueprod/config": "^0.2.8",
-    "@blueprod/pubsub": "0.1"
+    "@blueprod/pubsub": "0.1.0",
+    "@blueprod/pubsub-redis": "0.1.0",
+    "@blueprod/pubsub-nats": "0.1.0",
+    "@blueprod/pubsub-kafka": "0.1.0"
   }
 }
