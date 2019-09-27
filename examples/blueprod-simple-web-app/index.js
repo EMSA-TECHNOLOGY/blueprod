@@ -12,3 +12,5 @@ app.get('/hello', async(ctx)=> {
 });
 
 app.start(21400);
+
+console.log("Checking out the api at this url: http://localhost:21400/hello");
