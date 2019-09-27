@@ -129,7 +129,14 @@ PubSubKafkaEventService.prototype.on = function (topic, listener) {
   const self = this;
   self.subscriber.addTopics([topic], function (err, added) {
     if (err) {
-      console.log("Add Topic Error:  " + err);
+      self.publisher.createTopics([topic], true, function (err, data) {
+        if (err) {
+          console.log("Add Topic Error:  " + err);
+        }
+        if (data) {
+          self.on(topic, listener);
+        }
+      });
     }
   });
   self.topicListeners[topic] = listener;
