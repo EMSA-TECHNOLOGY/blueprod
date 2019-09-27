@@ -1,13 +1,25 @@
 {
   "name": "@blueprod/pubsub-nats",
-  "version": "1.0.0",
+  "version": "0.1",
   "description": "This module is to support pubsub event to nats server....",
   "main": "src/pubsub-nats.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "EMSA Company",
-  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EMSA-TECHNOLOGY/blueprod.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [],
+  "author": "EMSA Team",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/EMSA-TECHNOLOGY/blueprod/issues"
+  },
+  "homepage": "https://github.com/EMSA-TECHNOLOGY/blueprod/tree/master/packages/pubsub-nats#readme",
   "dependencies": {
     "nats": "^1.3.0"
   }

@@ -1,3 +1,21 @@
+/*#*
+***************************************************************************************************
+** EMSA TECHNOLOGY COMPANY LTD - All Rights Reserved.
+**
+** File: blueprod-pubsub.js
+** Version: 0.1
+** License: MIT
+**
+** Description:
+***************
+**
+** History:
+***********
+** Version 0.1 khanhnq/locnt
+** + Creation and implementation.
+***************************************************************************************************
+*#*/
+
 const config = require('./config');
 const natsImpl = require('@blueprod/pubsub-nats');
 const redisImpl = require('@blueprod/pubsub-redis');

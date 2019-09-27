@@ -1,16 +1,28 @@
 {
   "name": "@blueprod/pubsub",
-  "version": "0.0.2",
+  "version": "0.1",
   "description": "This module is to support pubsub event....",
   "main": "src/blueprod-pubsub.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "EMSA Company",
-  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EMSA-TECHNOLOGY/blueprod.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [],
+  "author": "EMSA Team",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/EMSA-TECHNOLOGY/blueprod/issues"
+  },
+  "homepage": "https://github.com/EMSA-TECHNOLOGY/blueprod/tree/master/packages/pubsub#readme",
   "dependencies": {
-    "@blueprod/pubsub-kafka": "0.0.1",
-    "@blueprod/pubsub-nats": "0.0.2",
-    "@blueprod/pubsub-redis": "0.0.2"
+    "@blueprod/pubsub-kafka": "0.1",
+    "@blueprod/pubsub-nats": "0.1",
+    "@blueprod/pubsub-redis": "0.1"
   }
 }
