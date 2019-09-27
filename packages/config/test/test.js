@@ -12,8 +12,8 @@ describe('blueprod-config-basic', function() {
       config.reload({rootAppPath, debug: true});
     });
 
-    it('Var envKey1 in .env should return \"test string 1\"', function() {
-      assert.strictEqual(config.get('envKey1'), 'test string 1');
+    it('Var envKey1 in .env should NOT return \"test string 1\"', function() {
+      assert.strictEqual(config.get('envKey1'), undefined);
     });
 
     it('Var envTestKey1 in .env.test should return \"test string 2\"', function() {

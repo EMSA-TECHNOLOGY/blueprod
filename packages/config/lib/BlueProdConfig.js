@@ -82,18 +82,22 @@ BlueProdConfig.prototype.load = function (opts = {}) {
   console.log(chalk.bgGreen(`| ROOT CONFIG PATH:    ${self.rootConfigPath}`.padEnd(79, ' ') +'|'));
   console.log(chalk.bgGreen(`└──────────────────────────────────────────────────────────────────────────────┘`));
 
+  /* Does not support .env since this file is used for docker compose */
   /* bug: https://stackoverflow.com/questions/26973484/node-dotenv-is-not-working/43522068#43522068 */
   //{path: __dirname + '/.env'}
-  dotenv.config({path: path.join(self.rootAppPath, '.env'), debug: opts.debug | false});
+  //const result = dotenv.config({path: path.join(self.rootAppPath, '.env'), debug: opts.debug | false});
 
   /* load further env file if existed: .env.production */
   if (nodeEnv && nodeEnv !== '') {
-    let envFile = path.join(self.rootAppPath, `.env.${nodeEnv}`);
-    if (fs.existsSync(envFile)) {
-      const envConfig = dotenv.parse(fs.readFileSync(envFile));
+    let envConfigFile = path.join(self.rootAppPath, `.env.${nodeEnv}`);
+    if (fs.existsSync(envConfigFile)) {
+      const envConfig = dotenv.parse(fs.readFileSync(envConfigFile));
       for (let k in envConfig) {
-        process.env[k] = envConfig[k]
+        if (envConfig.hasOwnProperty(k)) {
+          process.env[k] = envConfig[k];
+        }
       }
+      console.log(chalk.bgGreen('Environment configuration loaded: ' +envConfig));
     }
   }
 

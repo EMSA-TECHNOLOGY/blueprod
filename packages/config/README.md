@@ -18,7 +18,7 @@ rootAppPath:
    |   |- production.yaml
    |
    |- .env
-   |- .env.production
+   |- .env.${NODE_ENV}
 ```
 
 ## How To Use
