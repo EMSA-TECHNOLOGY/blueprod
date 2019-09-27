@@ -9,7 +9,7 @@
 1. Create data source: invoke: `databaseFactory.createConnection(dataSourceName, adapter, connString, options)`
 
 Parameters:
-* dataSourceName `string`: The data name of data source (unique). e.g: xpaas_db, log_db 
+* dataSourceName `string`: The data name of data source (unique). e.g: default_db, log_db 
 * adapter `string`: The database adapter. Which is implemented and registered in DatabaseFactory. e.g: mongodb, dynamodb
 * connString `string`: The connection string (some database does not need like dynamodb). e.g: mongodb://localhost:27017/log_db
 * options `object`: The connection options, used to initialize the connection
@@ -48,3 +48,7 @@ Enter Dynamo Secret information to AWS_DYNAMO_ACCESS_KEY_ID and AWS_DYNAMO_SECRE
 
 `./packages/database/test/test-mongodb.js.js`
 `./packages/database/test/test-dynamodb.js.js`
+
+## TODO:
+ - package to a nodejs package
+ - ...
