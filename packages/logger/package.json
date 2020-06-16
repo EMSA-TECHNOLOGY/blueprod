@@ -38,5 +38,6 @@
     "winston": "^3.2.1",
     "winston-mongodb": "^5.0.1",
     "winston-transport": "^4.3.0"
-  }
+  },
+  "gitHead": "1f80c83239a19036ce38554bde246eafabb4cc75"
 }
