@@ -1,6 +1,6 @@
 {
   "name": "@blueprod/logger",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "Logger",
   "main": "src/Logger.js",
   "directories": {
@@ -39,5 +39,5 @@
     "winston-mongodb": "^5.0.1",
     "winston-transport": "^4.3.0"
   },
-  "gitHead": "1f80c83239a19036ce38554bde246eafabb4cc75"
+  "gitHead": "eb4a5fafefab8e005728540c54bf9be6848efa8d"
 }

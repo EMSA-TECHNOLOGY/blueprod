@@ -211,7 +211,7 @@ Logger.prototype.internal_initLogger = function (componentName, options) {
   if (logging.console.enabled) {
     const alignedWithColorsAndTime = format.combine(
       format.colorize(),
-      // format.splat(),
+      format.splat(),
       /* doest not work yet */
       // errorStackTracerFormat(),
       format.errors({stack: true}),
