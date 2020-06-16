@@ -1,6 +1,6 @@
 {
   "name": "@blueprod/ws-mvc-loader",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "This module is to support the traditional MVC model i.e. controller, service,...",
   "main": "src/MVCLoader.js",
   "repository": {
