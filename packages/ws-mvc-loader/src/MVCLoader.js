@@ -122,6 +122,7 @@ MVCLoader.prototype.load = async function (params) {
   const opts = _.merge(params || {}, common.Constants.MVC_CONSTANTS.MVC_DEFAULT_OPTIONS);
 
   this.logger = opts.logger || logger;
+  opts.logger = this.logger;
   const loadRoute = _.isUndefined(opts.loadRoute) ? true : opts.loadRoute;
   const loadRouteFromSwaggerDoc = _.isUndefined(opts.loadRouteFromSwaggerDoc) ? true : opts.loadRouteFromSwaggerDoc;
   const loadController = _.isUndefined(opts.loadController) ? true : opts.loadController;
