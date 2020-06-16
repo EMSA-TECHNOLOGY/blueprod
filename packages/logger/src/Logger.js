@@ -91,7 +91,7 @@ let configurationOptions;
  * @constructor
  */
 const Logger = function (namespace, opts) {
-  namespace = namespace.name || namespace || root;
+  namespace = namespace ? namespace.name || namespace : 'root';
   const nsInstance = cachedLoggers[namespace];
 
   if (nsInstance) {

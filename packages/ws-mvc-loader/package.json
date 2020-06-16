@@ -37,7 +37,7 @@
   "dependencies": {
     "@blueprod/common": "^0.3.0",
     "@blueprod/config": "^0.2.3",
-    "@blueprod/logger": "^0.1.6",
+    "@blueprod/logger": "^0.1.7",
     "debug": "^4.1.1",
     "glob": "^7.1.6",
     "include-all": "^4.0.3",
