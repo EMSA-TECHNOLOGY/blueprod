@@ -94,7 +94,7 @@ function parseRouteTarget (routePath, target, controllers) {
       const controller = controllers[targetInfo.controllerId];
 
       if (!controller) {
-        logger.error(`Controller is not found: ${targetInfo.controllerId}, ignored route: ${routePath}!`);
+        logger.warn(`Controller is not found: ${targetInfo.controllerId}, ignored route: ${routePath}!`);
         return false;
         /* parse fail */
       }
@@ -112,7 +112,7 @@ function parseRouteTarget (routePath, target, controllers) {
       // targetInfo.actionId = actionId;
       targetInfo.controller = controller;
     } else {
-      logger.error('Ignored unknown route target: ' + target);
+      logger.warn('Ignored unknown route target: ' + target);
     }
   } else if (_.isArray(target)) {
     /* Rarely... to be supported later */
