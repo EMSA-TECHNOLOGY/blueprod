@@ -10,8 +10,8 @@
   "author": "Thanh LE <thanhlq@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "@blueprod/config": "^0.2.4",
+    "@blueprod/config": "^0.2.3",
     "@blueprod/ws-view-koa-ejs": "^0.1.0",
-    "@blueprod/ws-koa": "^0.1.2"
+    "@blueprod/ws-koa": "^0.1.3"
   }
 }
