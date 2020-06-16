@@ -1,6 +1,6 @@
 {
   "name": "@blueprod/ws-koa",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Web Service implementation via Koa.js",
   "main": "src/index.js",
   "repository": {
@@ -32,13 +32,13 @@
   "author": "Thanh LE <thanhlq@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "@blueprod/common": "^0.2.0",
+    "@blueprod/common": "^0.3.0",
     "@blueprod/config": "^0.2.4",
     "@blueprod/logger": "^0.1.5",
     "@blueprod/ws-view-koa-ejs": "^0.1.0",
-    "koa": "^2.7.0",
-    "koa-bodyparser": "^4.2.1",
-    "koa-compress": "^3.0.0",
+    "koa": "^2.12.1",
+    "koa-bodyparser": "^4.3.0",
+    "koa-compress": "^4.0.1",
     "koa-conditional-get": "^2.0.0",
     "koa-etag": "^3.0.0",
     "koa-favicon": "^2.0.1",
@@ -52,5 +52,6 @@
     "koa-static": "^5.0.0",
     "koa2-cors": "^2.0.6",
     "zlib": "^1.0.5"
-  }
+  },
+  "gitHead": "c22cfb8bf89425ba48ff1d0bccc167b26c29a08d"
 }

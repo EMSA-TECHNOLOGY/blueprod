@@ -22,5 +22,6 @@
   "homepage": "https://github.com/EMSA-TECHNOLOGY/blueprod/tree/master/packages/pubsub-kafka#readme",
   "dependencies": {
     "kafka-node": "^4.1.3"
-  }
+  },
+  "gitHead": "c22cfb8bf89425ba48ff1d0bccc167b26c29a08d"
 }

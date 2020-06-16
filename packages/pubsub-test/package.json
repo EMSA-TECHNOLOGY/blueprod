@@ -18,8 +18,9 @@
   "dependencies": {
     "@blueprod/config": "^0.2.8",
     "@blueprod/pubsub": "0.1.0",
-    "@blueprod/pubsub-redis": "0.1.0",
+    "@blueprod/pubsub-kafka": "0.1.0",
     "@blueprod/pubsub-nats": "0.1.0",
-    "@blueprod/pubsub-kafka": "0.1.0"
-  }
+    "@blueprod/pubsub-redis": "0.1.0"
+  },
+  "gitHead": "c22cfb8bf89425ba48ff1d0bccc167b26c29a08d"
 }
