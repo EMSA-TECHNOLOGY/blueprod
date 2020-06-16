@@ -1,24 +1,3 @@
-/*#*
-***************************************************************************************************
-** Copyright © 2018 EMSA TECHNOLOGY COMPANY LTD - All Rights Reserved.
-**
-** License:       MIT
-**
-** File:          ErrorResponseHandlerMiddleware.js
-** Version:       0.1
-** Author:        <href="mailto:thanhlq@emsa-technology.com"> Thanh LE</a>
-**
-** Description:
-***************
-**
-**
-** History:
-***********
-** Version 0.1  2019/07/16/05/08 09:00:00 (GMT+7)  thanhlq
-**   + Creation and implementation.
-***************************************************************************************************
-*#*/
-
 'use strict';
 
 const constants = require('../WsConstants');

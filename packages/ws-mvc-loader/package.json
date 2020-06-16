@@ -1,5 +1,5 @@
 {
-  "name": "@blueprod/ws-mvc-route",
+  "name": "@blueprod/ws-mvc-loader",
   "version": "0.1.0",
   "description": "This module is to support the traditional MVC model i.e. controller, service,...",
   "main": "src/MVCLoader.js",
@@ -11,7 +11,7 @@
     "access": "public"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node node_modules/mocha/bin/mocha.js"
   },
   "keywords": [
     "web",
@@ -32,18 +32,18 @@
     "route",
     "controller"
   ],
-  "author": "Thanh LE <thanhlq@emsa-technology.com>",
+  "author": "Thanh LE <thanhlq@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "@blueprod/common": "^0.2.0",
+    "@blueprod/common": "^0.3.0",
     "@blueprod/config": "^0.2.3",
     "@blueprod/logger": "^0.1.5",
     "debug": "^4.1.1",
-    "glob": "^7.1.4",
+    "glob": "^7.1.6",
     "include-all": "^4.0.3",
-    "js-yaml": "^3.13.1",
-    "lodash": "^4.17.14",
-    "swagger-jsdoc": "^3.3.0"
+    "js-yaml": "^3.14.0",
+    "lodash": "^4.17.15",
+    "swagger-jsdoc": "^4.0.0"
   },
   "gitHead": "eee2afafbcc00f272cbea8cc26a054fa0d1d4fbc"
 }

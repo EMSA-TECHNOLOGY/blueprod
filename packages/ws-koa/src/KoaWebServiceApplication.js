@@ -1,25 +1,3 @@
-/*#*
-***************************************************************************************************
-** Copyright © 2016 EMSA TECHNOLOGY COMPANY LTD - All Rights Reserved.
-**
-** This software is the proprietary information of EMSA TECHNOLOGY COMPANY LTD and ÉOLANE. Unauthorized
-** copying of this file, via any medium is strictly prohibited proprietary and confidential.
-**
-** File:         KoaWebServiceApplication.js
-** Version:      0.1
-** Author:       <href="mailto:thanhlq@emsa-technology.com"> Thanh LE</a>
-**
-** Description:
-***************
-** Server-side Web Service library.
-**
-** History:
-***********
-** Version 0.1  2019/07/12 09:00:00  thanhlq @ emsa-technology dot com
-**   + Creation and implementation.
-***************************************************************************************************
-*#*/
-
 'use strict';
 
 // ┌───────────────────────────────────────────────────────────────────────────┐
@@ -27,7 +5,7 @@
 // └───────────────────────────────────────────────────────────────────────────┘
 
 const _ = require('lodash');
-const uuid = require("uuid/v4");
+// const uuid = require("uuid/v4");
 const http = require('http');
 const Koa = require('koa');
 const Router = require('koa-router');
@@ -86,7 +64,7 @@ const KoaWebServiceApplication = function (koaInstance, opts = {}) {
   this.router = router;
   /* To contain working options */
   this.options = {
-    rootAppPath:                        process.env["BLUEPROD_ROOT_APP_PATH"] || global.rootAppPath,
+    rootAppPath:                        process.env["BD_ROOT_APP_PATH"] || global.rootAppPath,
   };
 
   /* Contain all bound verb-paths */

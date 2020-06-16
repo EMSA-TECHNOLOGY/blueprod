@@ -4,7 +4,7 @@
 
 const _ = require('lodash');
 const Verbs = require('./Verbs');
-const logger = require('@blueprod/logger')('ws-mvc-route');
+const logger = require('@blueprod/logger')('ws-mvc-loader');
 
 module.exports = function (routes, controllers) {
   const builtRoutes = {};
@@ -15,7 +15,15 @@ module.exports = function (routes, controllers) {
     }
 
     let targets = routes[path];
-    let args = sanitize(path, targets);
+    let args;
+    if (targets.method && targets.path) {
+      args = {
+        verb: targets.method,
+        path: targets.path,
+      }
+    } else {
+      args = sanitize(path, targets);
+    }
     let httpVerb = args.verb || 'ALL';
     let verb = Verbs.userVerb2KoaVerb(args.verb || 'ALL');
 
@@ -94,7 +102,7 @@ function parseRouteTarget (routePath, target, controllers) {
       targetInfo.fn = controller[targetInfo.action];
 
       if (!targetInfo.fn) {
-        logger.error(`Controller action is not found: ${targetInfo.action}, ignored route: ${routePath}!`);
+        logger.warn(`Controller action is not found: ${targetInfo.controllerId}/${targetInfo.action}, ignored route: ${routePath}!`);
         return false;
         /* parse fail */
       }
@@ -104,7 +112,7 @@ function parseRouteTarget (routePath, target, controllers) {
       // targetInfo.actionId = actionId;
       targetInfo.controller = controller;
     } else {
-      logger.error('Ingored unknown route target: ' + target);
+      logger.error('Ignored unknown route target: ' + target);
     }
   } else if (_.isArray(target)) {
     /* Rarely... to be supported later */
@@ -112,6 +120,8 @@ function parseRouteTarget (routePath, target, controllers) {
     return false;
   } else if (_.isObject(target)) {
     _.extend(targetInfo, target);
+    /* handler: "product.create" */
+    target.controller = target.controller || target.handler;
 
     if (target.action && target.controller) { /* controller = user, action = create */
       target.controllerId = target.controller;
@@ -141,7 +151,7 @@ function parseRouteTarget (routePath, target, controllers) {
       }
       targetInfo.fn = targetInfo.controller[targetInfo.action];
       if (!targetInfo.fn) {
-        logger.error(`Controller action is not found: ${target.action}, ignored route: ${routePath}!`);
+        logger.error(`Controller handler is not found: [${targetInfo.actionId}], ignored route: ${routePath}!`);
         return false;
         /* parse fail */
       }

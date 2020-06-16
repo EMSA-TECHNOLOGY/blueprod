@@ -4,7 +4,7 @@ const _ = require('lodash');
 const util = require('util');
 const includeAll = require('include-all');
 const path = require('path');
-const debug = require('debug')('ws-mvc-route');
+const debug = require('debug')('ws-mvc-loader');
 
 /**
  * Class to load API all provided controllers.

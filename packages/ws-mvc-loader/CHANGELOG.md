@@ -5,7 +5,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## 0.1.2 (2019-09-27)
 
-**Note:** Version bump only for package @blueprod/ws-mvc-route
+**Note:** Version bump only for package @blueprod/ws-mvc-loader
 
 
 
@@ -13,4 +13,4 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## 0.1.1 (2019-09-27)
 
-**Note:** Version bump only for package @blueprod/ws-mvc-route
+**Note:** Version bump only for package @blueprod/ws-mvc-loader

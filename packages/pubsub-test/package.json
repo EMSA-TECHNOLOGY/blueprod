@@ -13,8 +13,8 @@
   "publishConfig": {
     "access": "public"
   },
-  "author": "Emsa Company",
-  "license": "ISC",
+  "author": "Thanh LE",
+  "license": "MIT",
   "dependencies": {
     "@blueprod/config": "^0.2.8",
     "@blueprod/pubsub": "0.1.0",

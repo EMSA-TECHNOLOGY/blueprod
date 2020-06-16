@@ -1,26 +1,3 @@
-/*#*
-***************************************************************************************************
-** Copyright © 2016 EMSA TECHNOLOGY COMPANY LTD - All Rights Reserved.
-**
-** This software is the proprietary information of EMSA TECHNOLOGY COMPANY LTD and ÉOLANE. Unauthorized
-** copying of this file, via any medium is strictly prohibited proprietary and confidential.
-**
-** File:         RouteLoader.js
-** Version:      0.1
-** Created:      2018/06/05 09:00:00 (GMT+7)
-** Author:       <href="mailto:thanhlq@emsa-technology.com"> Thanh LE</a>
-**
-** Description:
-***************
-** Server-side Web Service library.
-**
-** History:
-***********
-** Version 0.1  2018/06/05 09:00:00  thanhlq
-**   + Creation and implementation.
-***************************************************************************************************
-*#*/
-
 'use strict';
 
 const _ = require('lodash');
@@ -28,7 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const glob = require('glob');
 const ROUTE_FILE_NAME_DEFAULT = 'routes.js';
-let debug = require('debug')('ws-mvc-route');
+let debug = require('debug')('ws-mvc-loader');
 
 /**
  * This class is to support simple route file definition like this:
@@ -57,7 +34,7 @@ module.exports = RouteLoader;
  */
 RouteLoader.prototype.load = async (opts) => {
   opts = opts || this.opts || {};
-  const rootAppPath = opts.rootAppPath || process.env['BLUEPROD_ROOT_APP_PATH'];
+  const rootAppPath = opts.rootAppPath || process.env['BD_ROOT_APP_PATH'];
   let findRouteFilePatterns = opts.routeFiles || ['config/**/*routes*'];
   findRouteFilePatterns = (Array.isArray(findRouteFilePatterns) ? findRouteFilePatterns : [findRouteFilePatterns]);
 

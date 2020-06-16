@@ -1,24 +1,3 @@
-/*#*
-***************************************************************************************************
-** Copyright © 2018 EMSA TECHNOLOGY COMPANY LTD - All Rights Reserved.
-**
-** License:       MIT
-**
-** File:          Logger.js
-** Version:       0.1
-** Author:        <href="mailto:thanhlq@emsa-technology.com"> Thanh LE</a>
-**
-** Description:
-***************
-** The main logger for the entire system. By using the underline Winston logger.
-**
-** History:
-***********
-** Version 0.1  2018/05/08 09:00:00 (GMT+7)  thanhlq
-**   + Creation and implementation.
-***************************************************************************************************
-*#*/
-
 /** @module Logger */
 
 'use strict';
@@ -30,13 +9,11 @@
 const _ = require('lodash');
 const path = require('path');
 const winston = require('winston');
-const Transport = require('winston-transport');
 const fs = require('fs');
 const mkdirp = require('mkdirp');
 const moment = require('moment');
 const debug = require('debug');
 const { format } = require('logform');
-// const { combine, label, timestamp, printf } = format;
 const LoggedHook = require('./LoggedHook');
 
 // ┌───────────────────────────────────────────────────────────────────────────┐
@@ -49,8 +26,8 @@ const LoggedHook = require('./LoggedHook');
 // └───────────────────────────────────────────────────────────────────────────┘
 
 const constants = {
-  BLUEPROD_PLATFORM_NAME:     'blueprod',
-  BLUEPROD_LOG_DIR_CK:        'BLUEPROD_LOG_DIR',
+  BD_PLATFORM_NAME:     'blueprod',
+  BD_LOG_DIR_CK:        'BD_LOG_DIR',
 
   DEFAULT_MONGODB_CONN_URL:   'mongodb://localhost:27017/blueprod_log',
 
@@ -91,7 +68,7 @@ const constants = {
 // });
 
 /** Initialized logger by namespace/component */
-const initializedLoggers = {};
+const cachedLoggers = {};
 /**
  * First received the configuration option and then to be used for later logger if not provided.
  */
@@ -114,8 +91,8 @@ let configurationOptions;
  * @constructor
  */
 const Logger = function (namespace, opts) {
-  namespace = namespace || 'RootLogger';
-  const nsInstance = initializedLoggers[namespace];
+  namespace = namespace.name || namespace || root;
+  const nsInstance = cachedLoggers[namespace];
 
   if (nsInstance) {
     return nsInstance;
@@ -125,11 +102,10 @@ const Logger = function (namespace, opts) {
     this.logTransport = {};
     /* Store distinctive log transport */
     this.logConnector = null;
-    namespace = namespace.name || namespace;
     this.namespace = namespace;
     this.internal_initLogger(this.namespace, opts);
     this.isDebug = debug.enabled(this.namespace);
-    initializedLoggers[namespace] = this;
+    cachedLoggers[namespace] = this;
   }
 };
 
@@ -207,10 +183,10 @@ Logger.prototype.configure = function (opts) {
  */
 Logger.prototype.internal_detectLogDirectory = function(opts = {}) {
   if (!this.logDir) {
-    this.logDir = opts.logDir || process.env[constants.BLUEPROD_LOG_DIR_CK];
+    this.logDir = opts.logDir || process.env[constants.BD_LOG_DIR_CK];
 
     if (!this.logDir) {
-      let rootAppPath = opts.rootAppPath || global.rootAppPath || process.env["BLUEPROD_ROOT_APP_PATH"] || require('app-root-path').path;
+      let rootAppPath = opts.rootAppPath || global.rootAppPath || process.env["BD_ROOT_APP_PATH"] || require('app-root-path').path;
       this.logDir = path.join(rootAppPath, "logs");
     }
   }
@@ -228,9 +204,9 @@ Logger.prototype.internal_initLogger = function (componentName, options) {
   let winstonTransports = [];
   const logging = this.configure(options);
 
-  const transport = new LoggedHook();
-  winstonTransports.push(transport);
-  transport.on('logged', self.onLogged);
+  // const transport = new LoggedHook();
+  // winstonTransports.push(transport);
+  // transport.on('logged', self.onLogged);
 
   if (logging.console.enabled) {
     const alignedWithColorsAndTime = format.combine(
@@ -281,7 +257,7 @@ Logger.prototype.internal_initLogger = function (componentName, options) {
   }
 
   if (logging.file.enabled) {
-    let logFilename = logging.file.fileName || constants.BLUEPROD_PLATFORM_NAME +'.log';
+    let logFilename = logging.file.fileName || constants.BD_PLATFORM_NAME +'.log';
     const filePath = self.internal_getOrCreateLogFilePath(self.internal_detectLogDirectory(options), logFilename);
     // const alignedAndTime = format.combine(
     //   format.timestamp(),
@@ -446,7 +422,7 @@ Logger.prototype.addHook = function (hook) {
       self.hooks.set(hook.level, [hook.cb]);
     }
   } else {
-    this.logger.error('Ingored invalid hook for logger!');
+    this.logger.error('Ignored invalid hook for logger!');
   }
 };
 

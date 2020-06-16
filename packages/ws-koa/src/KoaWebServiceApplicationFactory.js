@@ -1,24 +1,3 @@
-/*#*
-***************************************************************************************************
-** Copyright © 2018 EMSA TECHNOLOGY COMPANY LTD - All Rights Reserved.
-**
-** License:       MIT
-**
-** File:          KoaWebServiceApplicationFactory.js
-** Version:       0.1
-** Author:        <href="mailto:thanhlq@emsa-technology.com"> thanh LE</a>
-**
-** Description:
-***************
-** The utility class for building of the KoaWebServiceApplication instance.
-**
-** History:
-***********
-** Version 0.1  2018/05/08 09:00:00 (GMT+7)  thanhlq
-**   + Creation and implementation.
-***************************************************************************************************
-*#*/
-
 /** @module Logger */
 
 'use strict';

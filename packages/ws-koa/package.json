@@ -29,8 +29,8 @@
     "blueprod",
     "production"
   ],
-  "author": "Thanh LE <thanhlq@emsa-technology.com>",
-  "license": "ISC",
+  "author": "Thanh LE <thanhlq@gmail.com>",
+  "license": "MIT",
   "dependencies": {
     "@blueprod/common": "^0.2.0",
     "@blueprod/config": "^0.2.4",

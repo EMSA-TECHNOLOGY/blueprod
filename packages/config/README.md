@@ -29,7 +29,7 @@ You have several options to provide the root application path or it will be dete
 
 - config.load({rootAppPath: '/home/xxx')
 - global.rootAppPath
-- or process.env["BLUEPROD_ROOT_APP_PATH"]
+- or process.env["BD_ROOT_APP_PATH"]
 - or we will use  the node module "app-root-path"
 
 ```javascript

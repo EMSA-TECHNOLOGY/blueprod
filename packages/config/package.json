@@ -18,19 +18,18 @@
     "access": "public"
   },
   "keywords": [],
-  "author": "Thanh LE <thanhlq@emsa-technology.com>",
+  "author": "Thanh LE <thanhlq@gmail.com>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/EMSA-TECHNOLOGY/blueprod/issues"
   },
-  "homepage": "https://github.com/EMSA-TECHNOLOGY/blueprod/tree/master/packages/config#readme",
   "dependencies": {
     "app-root-path": "^2.2.1",
-    "chalk": "^2.4.2",
-    "dotenv": "^8.0.0",
-    "glob": "^7.1.4",
-    "js-yaml": "^3.13.1",
-    "lodash": "^4.17.14"
+    "chalk": "^4.1.0",
+    "dotenv": "^8.2.0",
+    "glob": "^7.1.6",
+    "js-yaml": "^3.14.0",
+    "lodash": "^4.17.15"
   },
   "devDependencies": {
     "mocha": "^6.1.4"

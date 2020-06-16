@@ -1,5 +1,4 @@
 const Transport = require('winston-transport');
-// const util = require('util');
 
 //
 // Inherit from `winston-transport` so you can take advantage
@@ -13,7 +12,7 @@ module.exports = class CustomTransport extends Transport {
     // Consume any custom options here. e.g.:
     // - Connection information for databases
     // - Authentication information for APIs (e.g. loggly, papertrail,
-    //   logentries, etc.).
+    //   log entries, etc.).
     //
   }
 

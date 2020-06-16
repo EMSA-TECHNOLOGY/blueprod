@@ -7,8 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "Thanh LE <thanhlq@emsa-technology.com>",
-  "license": "ISC",
+  "author": "Thanh LE <thanhlq@gmail.com>",
+  "license": "MIT",
   "dependencies": {
     "@blueprod/config": "^0.2.4",
     "@blueprod/ws-view-koa-ejs": "^0.1.0"

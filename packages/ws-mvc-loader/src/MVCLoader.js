@@ -1,26 +1,3 @@
-/*#*
-***************************************************************************************************
-** Copyright © 2016 EMSA TECHNOLOGY COMPANY LTD - All Rights Reserved.
-**
-** This software is the proprietary information of EMSA TECHNOLOGY COMPANY LTD and ÉOLANE. Unauthorized
-** copying of this file, via any medium is strictly prohibited proprietary and confidential.
-**
-** File:         MVCLoader.js
-** Version:      0.1
-** Created:      2018/06/05 09:00:00 (GMT+7)
-** Author:       <href="mailto:thanhlq@emsa-technology.com"> Thanh LE</a>
-**
-** Description:
-***************
-** The purpose of this class is to load all MVC stuffs as api controllers/services/routes/policies/...
-**
-** History:
-***********
-** Version 0.1  2018/06/05 09:00:00  thanhlq
-**   + Creation and implementation.
-***************************************************************************************************
-*#*/
-
 /** @module MVCLoader */
 
 'use strict';
@@ -31,14 +8,16 @@
 
 const _ = require('lodash');
 const path = require('path');
+const swaggerSpecGen = require('swagger-jsdoc');
+
+const logger = require('@blueprod/logger')('ws-mvc-loader');
+const common = require('@blueprod/common');
+
 const RouteLoader = require('./RouteLoader');
 const ControllerLoader = require('./GlobControllerLoader');
 const ServiceLoader = require('./ServiceLoader');
 const PolicyLoader = require('./PolicyLoader');
 const RawRouteToMvcRoute = require('./RawRouteToMvcRoute');
-const logger = require('@blueprod/logger')('ws-mvc-route');
-const common = require('@blueprod/common');
-const swaggerSpecGen = require('swagger-jsdoc');
 
 // ┌───────────────────────────────────────────────────────────────────────────┐
 // | IMPORT --                                                                 |
@@ -64,7 +43,7 @@ const constants = {
 
 /**
  *
- * @param wsApp Web Service Application instance. After everything loaded this instance shall have additional the following properties:
+ * @param [wsApp] Web Service Application instance. After everything loaded this instance shall have additional the following properties:
  *
  *  - routes: {}
  *  - controllers: {}
@@ -103,6 +82,9 @@ MVCLoader.constants = constants;
 // | EXPORT ++                                                                 |
 // └───────────────────────────────────────────────────────────────────────────┘
 
+/**
+ * @type {MVCLoader}
+ */
 module.exports = MVCLoader;
 
 // ┌───────────────────────────────────────────────────────────────────────────┐
@@ -117,23 +99,29 @@ module.exports = MVCLoader;
 /**
  * Start to find user's defined routes. All options are enabled by default.
  *
- * @param options
- * @param options.rootAppPath       {String} Required
- * @param options.loadRoute
- * @param options.loadRouteFromSwaggerDoc {Boolean} Load routes from swagger doc definition (see swagger-jsdoc module for details)
- * @param options.buildMvcRoutes          {Boolean} To build policy
- * @param options.loadController
- * @param options.loadService
- * @param options.loadPolicy
- * @param options.makeServiceGlobal  {Boolean}
- * @param options.logger
+ * @param params                   {*}
+ * @param params.rootAppPath       {String} Required
+ * @param params.loadRoute
+ * @param params.loadRouteFromSwaggerDoc {Boolean} Load routes from swagger doc definition (see swagger-jsdoc module for details)
+ * @param params.buildMvcRoutes          {Boolean} To build policy
+ * @param params.loadController
+ * @param params.loadService
+ * @param params.loadPolicy
+ * @param params.makeServiceGlobal  {Boolean}
+ * @param params.logger
  *
  * @return {Promise.<string>}
  */
-MVCLoader.prototype.load = async function (options) {
-  const opts = _.merge(options || {}, common.Constants.MVC_CONSTANTS.MVC_DEFAULT_OPTIONS);
+MVCLoader.prototype.load = async function (params) {
+  /* api path */
+  if (typeof params === 'string') {
+    const rootAppPath =  params;
+    params = {};
+    params.rootAppPath = rootAppPath;
+  }
+  const opts = _.merge(params || {}, common.Constants.MVC_CONSTANTS.MVC_DEFAULT_OPTIONS);
 
-  this.logger = opts.logger || console;
+  this.logger = opts.logger || logger;
   const loadRoute = _.isUndefined(opts.loadRoute) ? true : opts.loadRoute;
   const loadRouteFromSwaggerDoc = _.isUndefined(opts.loadRouteFromSwaggerDoc) ? true : opts.loadRouteFromSwaggerDoc;
   const loadController = _.isUndefined(opts.loadController) ? true : opts.loadController;
@@ -142,7 +130,7 @@ MVCLoader.prototype.load = async function (options) {
   const buildMvcRoutes = _.isUndefined(opts.buildMvcRoutes) ? true : opts.buildMvcRoutes;
 
   if (!opts.rootAppPath) {
-    opts.rootAppPath = global.rootAppPath || process.env["BLUEPROD_ROOT_APP_PATH"] || path.resolve(__dirname).split('/node_modules')[0];
+    opts.rootAppPath = global.rootAppPath || process.env["BD_ROOT_APP_PATH"] || path.resolve(__dirname).split('/node_modules')[0];
   }
 
   if (loadRoute) {

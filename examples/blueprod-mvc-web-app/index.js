@@ -1,11 +1,11 @@
 // const ws = require('"@blueprod/ws-koa": "^0.1.0"');
 // const app = new ws.KoaWebServiceApplication();
 
-process.env['DEBUG']='ws-mvc-route';
+process.env['DEBUG']='ws-mvc-loader';
 
 const ws = require('../../packages/ws-koa/src');
 // const ws = require('@blueprod/ws-koa');
-const MVC = require('../../packages/ws-mvc-route/src');
+const MVC = require('../../packages/ws-mvc-loader/src');
 const config = require('@blueprod/config').load({rootAppPath: __dirname});
 const webservieApp = new ws.KoaWebServiceApplication({config});
 

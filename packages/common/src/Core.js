@@ -1,24 +1,3 @@
-/*#*
-***************************************************************************************************
-** Copyright © 2018 EMSA TECHNOLOGY COMPANY LTD - All Rights Reserved.
-**
-** License:       MIT
-**
-** File:          Utils.js
-** Version:       0.1
-** Author:        <href="mailto:thanhlq@emsa-technology.com"> Thanh LE</a>
-**
-** Description:
-***************
-** An class that contain very common methods used cross modules.
-**
-** History:
-***********
-** Version 0.1  2018/05/08 09:00:00 (GMT+7)  thanhlq
-**   + Creation and implementation.
-***************************************************************************************************
-*#*/
-
 /** @module Core */
 
 'use strict';
@@ -59,7 +38,7 @@ const Core = function () {
     this.env = 'production';
   }
 
-  this.Promise = Promise || require('bluebird');
+  this.Promise = Promise;
 };
 
 Core.constants = constants;
@@ -255,7 +234,7 @@ Core.prototype.findFilesSync = (dir, opts = {}) => {
   })();
 };
 
-function UnitTest() {
+/*function UnitTest() {
   console.log(module.exports.toArray('a'));
   console.log(module.exports.toArray(undefined));
   console.log(module.exports.toArray(['a']));
@@ -274,7 +253,7 @@ function UnitTest() {
   };
 
   console.log(module.exports.jsonPretty(obj1));
-}
+}*/
 
 // UnitTest();
 

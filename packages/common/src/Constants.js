@@ -1,7 +1,7 @@
 'use strict';
 
-const PLATFORM_NAME =                   process.env['BLUEPROD_PLATFORM_NAME'] || 'BLUEPROD';
-const CONFIG_PREFIX =                   process.env['BLUEPROD_CONFIG_PREFIX'] || 'BLUEPROD_';
+const PLATFORM_NAME =                   process.env['BD_PLATFORM_NAME'] || 'blueprod';
+const CONFIG_PREFIX =                   process.env['BD_CONFIG_PREFIX'] || 'BD_';
 
 const HTTP_OPTIONS_DEFAULT = {
   port: process.env.HTTP_PORT || 21400,

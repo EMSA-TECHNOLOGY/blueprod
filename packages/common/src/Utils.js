@@ -1,26 +1,3 @@
-/*#*
-***************************************************************************************************
-** Copyright © 2018 EMSA TECHNOLOGY COMPANY LTD - All Rights Reserved.
-**
-** License:       MIT
-**
-** File:          utils.js
-** Version:       0.1
-** Author:        <href="mailto:thanhlq@emsa-technology.com"> Thanh LE</a>
-**
-** Description:
-***************
-** An class that contain very common methods used cross modules.
-**
-** History:
-***********
-** Version 0.1  2018/05/08 09:00:00 (GMT+7)  thanhlq
-**   + Creation and implementation.
-***************************************************************************************************
-*#*/
-
-/** @module Utils */
-
 'use strict';
 
 // ┌───────────────────────────────────────────────────────────────────────────┐
@@ -28,7 +5,7 @@
 // └───────────────────────────────────────────────────────────────────────────┘
 
 const _ = require('lodash');
-const uuid = require('uuid/v4');
+const uuid = require('uuid');
 const fs = require('fs');
 const path = require('path');
 const validator = require('validator');

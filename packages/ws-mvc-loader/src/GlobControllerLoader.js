@@ -1,26 +1,3 @@
-/*#*
-***************************************************************************************************
-** Copyright © 2016 EMSA TECHNOLOGY COMPANY LTD - All Rights Reserved.
-**
-** This software is the proprietary information of EMSA TECHNOLOGY COMPANY LTD and ÉOLANE. Unauthorized
-** copying of this file, via any medium is strictly prohibited proprietary and confidential.
-**
-** File:         ControllerLoader.js
-** Version:      0.1
-** Created:      2018/06/05 09:00:00 (GMT+7)
-** Author:       <href="mailto:thanhlq@emsa-technology.com"> Thanh LE</a>
-**
-** Description:
-***************
-** Server-side Web Service library.
-**
-** History:
-***********
-** Version 0.1  2018/06/05 09:00:00  thanhlq
-**   + Creation and implementation.
-***************************************************************************************************
-*#*/
-
 'use strict';
 
 const COMPONENT_NAME = 'ControllerLoader';
@@ -82,7 +59,9 @@ ControllerLoader.prototype.load = async (opts) => {
       const file = foundFiles[c];
       const fileInfo = path.parse(file);
       // console.log(fileInfo);
-      const controllerId = fileInfo.name.toLowerCase().replace('controller', '');
+      const controllerId = fileInfo.name.toLowerCase()
+        .replace('-controller', '')
+        .replace('controller', '');
       try {
         controllers[controllerId] = require(file);
         controllerFiles.push(file);

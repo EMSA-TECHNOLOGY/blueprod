@@ -1,1 +1,1 @@
-declare module "blueprod-config";
+declare module "@blueprod/config";
