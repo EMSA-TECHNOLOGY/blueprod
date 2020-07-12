@@ -4,8 +4,8 @@
 // | IMPORT ++                                                                 |
 // └───────────────────────────────────────────────────────────────────────────┘
 
-const process = require('process');
-const pubsubModules = require("redis");
+const redisClient = require("redis");
+const logger = require('@blueprod/logger')('pubsub-redis');
 
 // ┌───────────────────────────────────────────────────────────────────────────┐
 // | IMPORT --                                                                 |
@@ -16,16 +16,10 @@ const pubsubModules = require("redis");
 // | GLOBAL VARIABLE ++                                                        |
 // └───────────────────────────────────────────────────────────────────────────┘
 
-const COMPONENT_NAME = 'PubsubRedisEventService';
-
-const constants = {
-  /* To add constants here */
-};
-
 const DEFAULT_REDIS_CONNECTION = Object.freeze({
-  host: "127.0.0.1",
-  port: 6379,
-  password: null
+  host: process.env.REDIS_HOST || "127.0.0.1",
+  port: process.env.REDIS_PORT || 6379,
+  password: process.env.REDIS_PWD || null
 });
 
 // ┌───────────────────────────────────────────────────────────────────────────┐
@@ -37,51 +31,51 @@ const DEFAULT_REDIS_CONNECTION = Object.freeze({
 // | CLASS DECLARATION ++                                                      |
 // └───────────────────────────────────────────────────────────────────────────┘
 
-const PubsubRedisEventService = function (opts = {}) {
-  const self = this;
-  self.serviceName = COMPONENT_NAME;
-
-  self.topicListeners = {};
-
-  self.subscriber = self.publisher = pubsubModules.createClient(opts);
-  self.subscriber.on("message", function (channel, message) {
-    const listener = self.topicListeners[channel];
-
+const PubSubRedis = function (opts = {}) {
+  this.topicListeners = {};
+  opts.no_ready_check = true;
+  this.subscriber = this.publisher = redisClient.createClient(opts);
+  this.subscriber.on('message', (channel, message) => {
+    const listener = this.topicListeners[channel];
     listener(message);
   });
+
+  if (opts.password) {
+    this.subscriber.auth(opts.password, () => {
+      logger.info('Subscribe connected and authenticated!');
+    });
+    this.publisher.auth(opts.password, () => {
+      logger.info('Publisher connected and authenticated!');
+    });
+  }
 };
 
-PubsubRedisEventService.constants = constants;
-
 // ┌───────────────────────────────────────────────────────────────────────────┐
-// | CLASS DECLARATION --                                                      |
+// │  CLASS DECLARATION --                                                     │
 // └───────────────────────────────────────────────────────────────────────────┘
 
 
 // ┌───────────────────────────────────────────────────────────────────────────┐
-// | EXPORT ++                                                                 |
+// │ EXPORT ++                                                                 │
 // └───────────────────────────────────────────────────────────────────────────┘
 
 module.exports = function (opts = {}) {
-  let connection = {
+  const redisOpts = {
     host: opts.host || process.env.REDIS_HOST || DEFAULT_REDIS_CONNECTION.host,
-    port: opts.port || process.env.REDIS_PORT || DEFAULT_REDIS_CONNECTION.port
+    port: opts.port || process.env.REDIS_PORT || DEFAULT_REDIS_CONNECTION.port,
+    password: opts.password || process.env.REDIS_PASSWORD,
   };
 
-  if (opts.password) {
-    connection.password = opts.password
-  }
-
-  return new PubsubRedisEventService(connection);
+  return new PubSubRedis(redisOpts);
 };
 
 // ┌───────────────────────────────────────────────────────────────────────────┐
-// | EXPORT --                                                                 |
+// │ EXPORT --                                                                 │
 // └───────────────────────────────────────────────────────────────────────────┘
 
 
 // ┌───────────────────────────────────────────────────────────────────────────┐
-// | IMPLEMENTATION ++                                                         |
+// │ IMPLEMENTATION ++                                                         │
 // └───────────────────────────────────────────────────────────────────────────┘
 
 /**
@@ -90,34 +84,29 @@ module.exports = function (opts = {}) {
  * @param listener
  * @return {boolean}
  */
-PubsubRedisEventService.prototype.on = function (topic, listener) {
-  const self = this;
-
-  if (self.topicListeners[topic]) {
-    self.unsubscribe(topic);
+PubSubRedis.prototype.on = function (topic, listener) {
+  if (this.topicListeners[topic]) {
+    this.unsubscribe(topic);
   }
 
-  self.subscriber.subscribe(topic);
-  self.topicListeners[topic] = listener;
+  this.subscriber.subscribe(topic);
+  this.topicListeners[topic] = listener;
 };
 
-PubsubRedisEventService.prototype.emit = function (topic, eventData) {
-  const self = this;
+PubSubRedis.prototype.emit = function (topic, eventData) {
   let event = {
     topic: topic,
     pid: process.pid,
     data: eventData,
   };
 
-  self.publisher.publish(topic, JSON.stringify(event));
+  this.publisher.publish(topic, JSON.stringify(event));
 };
 
-PubsubRedisEventService.prototype.unsubscribe = function (topic) {
-  const self = this;
-  self.subscriber.unsubscribe(topic);
+PubSubRedis.prototype.unsubscribe = function (topic) {
+  this.subscriber.unsubscribe(topic);
 };
 
 // ┌───────────────────────────────────────────────────────────────────────────┐
 // | IMPLEMENTATION --                                                         |
 // └───────────────────────────────────────────────────────────────────────────┘
-

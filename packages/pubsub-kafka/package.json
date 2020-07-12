@@ -11,7 +11,7 @@
     "url": "git+https://github.com/EMSA-TECHNOLOGY/blueprod.git"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "private"
   },
   "keywords": [],
   "author": "EMSA Team",

@@ -295,7 +295,7 @@ Logger.prototype.internal_initLogger = function (componentName, options) {
       transports: winstonTransports,
       exitOnError: false
     });
-    self.logger.debug(`[${self.namespace}]  Instantiated with transports: [console: ${logging.console.enabled}, file: ${logging.file.enabled}, database: ${logging.database.enabled}]`);
+    self.logger.debug(`[${self.namespace}]  logger instantiated with transports: [console: ${logging.console.enabled}, file: ${logging.file.enabled}, database: ${logging.database.enabled}]`);
   } else {
     console.error('[NOK] No logging transport configured!');
     self.logger = {

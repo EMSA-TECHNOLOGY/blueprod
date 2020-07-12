@@ -1,7 +1,7 @@
 {
-  "name": "@blueprod/logger",
-  "version": "0.1.9",
-  "description": "Logger",
+  "name": "@blueprod/logger-lambda",
+  "version": "1.0.0",
+  "description": "Lambda Logger",
   "main": "src/Logger.js",
   "directories": {
     "test": "test"
@@ -18,9 +18,8 @@
   },
   "keywords": [
     "node.js",
-    "winston",
-    "logger",
-    "stream"
+    "lambda",
+    "logger"
   ],
   "author": "Thanh LE<thanhlq@gmail.com>",
   "license": "MIT",
@@ -29,15 +28,6 @@
   },
   "homepage": "https://github.com/EMSA-TECHNOLOGY/blueprod/tree/master/packages/logger",
   "dependencies": {
-    "app-root-path": "^3.0.0",
-    "debug": "^4.1.1",
-    "lodash": "^4.17.15",
-    "logform": "^2.1.2",
-    "mkdirp": "^1.0.4",
-    "moment": "^2.26.0",
-    "winston": "^3.2.1",
-    "winston-mongodb": "^5.0.1",
-    "winston-transport": "^4.3.0"
   },
   "gitHead": "eb4a5fafefab8e005728540c54bf9be6848efa8d"
 }
