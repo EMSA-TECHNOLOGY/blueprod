@@ -19,6 +19,7 @@ class Logger {
   constructor(ns, opts) {
     this.namespace = ns;
     this.opts = opts || {};
+    this.isDebugMode = this.opts.debug !== undefined ? this.opts.debug : this.isDebug();
   }
 
   /**
@@ -30,9 +31,11 @@ class Logger {
   }
 
   debug(message, e) {
-    delegate.debug(message);
-    if (e) {
-      delegate.debug(e);
+    if (this.isDebugMode) {
+      delegate.debug(message);
+      if (e) {
+        delegate.debug(e);
+      }
     }
   }
 

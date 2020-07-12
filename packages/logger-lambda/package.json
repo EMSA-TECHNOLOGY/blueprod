@@ -1,6 +1,6 @@
 {
   "name": "@blueprod/logger-lambda",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Lambda Logger",
   "main": "src/Logger.js",
   "directories": {
