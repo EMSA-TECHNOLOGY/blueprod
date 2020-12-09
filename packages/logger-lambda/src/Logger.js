@@ -14,6 +14,8 @@ function isDebug(name) {
   }
 }
 
+const jsonPretty = process.env['BD_LOG_JSON_PRETTY'] === 'TRUE';
+
 class Logger {
 
   constructor(ns, opts) {
@@ -30,33 +32,43 @@ class Logger {
     return isDebug(name || this.namespace);
   }
 
+  json(e) {
+    return (typeof e === 'object' ?
+      jsonPretty ? JSON.stringify(e, null, 2) : JSON.stringify(e)
+      : e);
+  }
+
   debug(message, e) {
     if (this.isDebugMode) {
       delegate.debug(message);
       if (e) {
-        delegate.debug(e);
+        delegate.debug(this.json(e));
       }
     }
+  }
+
+  log(message, data) {
+    this.info(message, data);
   }
 
   info(message, data) {
     delegate.info(message);
     if (data) {
-      delegate.info(data);
+      delegate.info(this.json(data));
     }
   }
 
-  warn(message, ex) {
+  warn(message, e) {
     delegate.warn(message);
-    if (ex) {
-      delegate.warn(ex);
+    if (e) {
+      delegate.warn(this.json(e));
     }
   }
 
-  error(message, ex) {
+  error(message, e) {
     delegate.error(message);
-    if (ex) {
-      delegate.error(ex);
+    if (e) {
+      delegate.error(json(e));
     }
   }
 
@@ -77,38 +89,48 @@ class NamespacedLogger {
     return isDebug(name || this.namespace);
   }
 
+  json(e) {
+    return (typeof e === 'object' ?
+      jsonPretty ? JSON.stringify(e, null, 2) : JSON.stringify(e)
+      : e);
+  }
+
   debug(message, e) {
     delegate.debug(`[${this.namespace}] ${message}`);
     if (e) {
-      delegate.debug(e);
+      delegate.debug(this.json(e));
     }
   }
 
   trace(message, e) {
     delegate.debug(`[${this.namespace}] [TRACE] ${message}`);
     if (e) {
-      delegate.debug(e);
+      delegate.debug(this.json(e));
     }
+  }
+
+  log(message, data) {
+    return this.info(message, data);
   }
 
   info(message, data) {
     delegate.info(`[${this.namespace}] ${message}`);
     if (data) {
-      delegate.info(data);
+      delegate.info(this.json(e));
     }
   }
 
-  warn(message, ex) {
+  warn(message, e) {
     delegate.warn(`[${this.namespace}] ${message}`);
-    if (ex) {
-      delegate.warn(ex);
+    if (e) {
+      delegate.warn(this.json(e));
     }
   }
 
-  error(message, ex) {
+  error(message, e) {
     delegate.error(`[${this.namespace}] ${message}`);
-    if (ex) {
-      delegate.error(ex);
+    if (e) {
+      delegate.error(this.json(e));
     }
   }
 
@@ -119,7 +141,10 @@ module.exports = function (namespace = '', opts) {
   if (logger) {
     return logger;
   }
-  return process.env['BD_LOGGER_NAMESPACE'] === 'TRUE' ?
+  /**
+   * The option to also print the namespace (logger name) in the log message.
+   */
+  return process.env['BD_LOG_PRINT_NAMESPACE'] === 'TRUE' ?
     cachedLoggers[namespace] = new NamespacedLogger(namespace, opts) :
     cachedLoggers[namespace] = new Logger(namespace, opts)
 }

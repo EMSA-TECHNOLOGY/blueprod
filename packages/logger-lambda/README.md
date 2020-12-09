@@ -7,4 +7,4 @@
 
 Enable namespace
 
-process.env['BD_LOGGER_NAMESPACE'] = 'TRUE';
+process.env['BD_LOG_PRINT_NAMESPACE'] = 'TRUE';
