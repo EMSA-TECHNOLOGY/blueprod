@@ -68,7 +68,7 @@ class Logger {
   error(message, e) {
     delegate.error(message);
     if (e) {
-      delegate.error(json(e));
+      delegate.error(this.json(e));
     }
   }
 
@@ -116,7 +116,7 @@ class NamespacedLogger {
   info(message, data) {
     delegate.info(`[${this.namespace}] ${message}`);
     if (data) {
-      delegate.info(this.json(e));
+      delegate.info(this.json(data));
     }
   }
 
