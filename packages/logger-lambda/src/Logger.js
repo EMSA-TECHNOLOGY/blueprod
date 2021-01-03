@@ -22,6 +22,7 @@ class Logger {
     this.namespace = ns;
     this.opts = opts || {};
     this.isDebugMode = this.opts.debug !== undefined ? this.opts.debug : this.isDebug();
+    this.onErrorListener = null;
   }
 
   /**
@@ -67,9 +68,19 @@ class Logger {
 
   error(message, e) {
     delegate.error(message);
+    let errJsonString;
     if (e) {
-      delegate.error(this.json(e));
+      errJsonString = this.json(e)
+      delegate.error(errJsonString);
     }
+    /* fire event to external listener */
+    if (this.onErrorListener) {
+      this.onErrorListener(message, errJsonString, e);
+    }
+  }
+
+  addErrorListener(listener) {
+    this.onErrorListener = listener;
   }
 
 }
@@ -79,6 +90,7 @@ class NamespacedLogger {
   constructor(ns, opts) {
     this.namespace = ns || 'root';
     this.opts = opts || {};
+    this.onErrorListener = null;
   }
 
   /**
@@ -128,12 +140,22 @@ class NamespacedLogger {
   }
 
   error(message, e) {
-    delegate.error(`[${this.namespace}] ${message}`);
+    const m = `[${this.namespace}] ${message}`;
+    delegate.error(m);
+    let errJsonString;
     if (e) {
-      delegate.error(this.json(e));
+      errJsonString = this.json(e)
+      delegate.error(errJsonString);
+    }
+    /* fire event to external listener */
+    if (this.onErrorListener) {
+      this.onErrorListener(m, errJsonString, e);
     }
   }
 
+  addErrorListener(listener) {
+    this.onErrorListener = listener;
+  }
 }
 
 module.exports = function (namespace = '', opts) {
