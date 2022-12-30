@@ -11,7 +11,7 @@
   "deprecated": false,
   "description": "An easy way to include all node.js modules within a directory.",
   "devDependencies": {
-    "mocha": "^6.1.4"
+    "mocha": "^10.2.0"
   },
   "directories": {
     "test": "test"
